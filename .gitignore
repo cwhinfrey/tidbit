@@ -1,0 +1,10 @@
+node_modules
+build
+*.log
+lib
+secrets.json
+coverage
+coverage.json
+allFiredEvents
+scTopics
+coverageEnv
