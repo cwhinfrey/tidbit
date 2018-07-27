@@ -29,7 +29,8 @@
     "snazzy": "^7.1.1",
     "solidity-coverage": "github:sc-forks/solidity-coverage#6a13575e3597e491299a9dd1474c64c9066faa69",
     "standard": "^10.0.3",
-    "truffle": "^4.1.13"
+    "truffle": "^4.1.13",
+    "web3-utils": "^1.0.0-beta.35"
   },
   "scripts": {
     "build": "node scripts/build.js",
