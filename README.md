@@ -1,6 +1,6 @@
-# Smart Contract Starter
+# Tidbit
 
-[Description]
+A library for oracles on Ethereum.
 
 ### Setup
 
