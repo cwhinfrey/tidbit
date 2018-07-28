@@ -1,15 +1,16 @@
 pragma solidity ^0.4.24;
 
-import "./BasicOracle.sol";
+import "./SingleSourceOracle.sol";
 import "zeppelin-solidity/contracts/ECRecovery.sol";
 
-contract SignedOracle is BasicOracle {
+contract SignedOracle is SingleSourceOracle {
 
-  address public dataSource;
-
-  constructor(address _dataSource) public {
-    dataSource = _dataSource;
-  }
+  constructor(
+    address _dataSource
+  )
+    SingleSourceOracle(_dataSource)
+    public 
+  {}
 
   function setResult(bytes32 _result, bytes _signature) public {
     // Generate message hash

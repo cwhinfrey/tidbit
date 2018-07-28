@@ -9,32 +9,32 @@ const RESULT = 'hello oracle'
 const RESULT_HASH = web3.utils.soliditySha3(RESULT);
 
 contract('SignedOracle', (accounts) => {
-  const signer = accounts[1]
+  const dataSource = accounts[1]
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await SignedOracle.new(signer)
+    oracle = await SignedOracle.new(dataSource)
   })
 
-  it('can set result by signer', async () => {
-    const signature = await web3.eth.sign(RESULT_HASH, signer)
+  it('can set result by data source', async () => {
+    const signature = await web3.eth.sign(RESULT_HASH, dataSource)
 
     await oracle.setResult(RESULT_HASH, signature)
     const result = await oracle.resultFor(0)
     result.should.equal(RESULT_HASH)
   })
 
-  it('cannot be set by a different signer', async () => {
+  it('cannot be set by a different data source', async () => {
     const signature = await web3.eth.sign(RESULT_HASH, accounts [0])
     await expectRevert(oracle.setResult(RESULT_HASH, signature))
   })
 
   it('cannot be set twice', async () => {
-    let signature = await web3.eth.sign(RESULT_HASH, signer)
+    let signature = await web3.eth.sign(RESULT_HASH, dataSource)
     await oracle.setResult(RESULT_HASH, signature)
     
     const secondHash = web3.utils.soliditySha3('another result');
-    signature = await web3.eth.sign(secondHash, signer)
+    signature = await web3.eth.sign(secondHash, dataSource)
     await expectRevert(oracle.setResult(RESULT_HASH, signature))
   })
 })

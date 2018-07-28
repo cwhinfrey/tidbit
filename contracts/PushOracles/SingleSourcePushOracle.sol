@@ -1,16 +1,16 @@
 pragma solidity ^0.4.24;
 
 import "./PushOracle.sol";
-import "../SignedOracle.sol";
+import "../SingleSourceOracle.sol";
 
-contract SignedPushOracle is SignedOracle, PushOracle {
+contract SingleSourcePushOracle is SingleSourceOracle, PushOracle {
 
   constructor (
     address _dataSource,
     IOracleHandler _handler
   )
     public
-    SignedOracle(_dataSource)
+    SingleSourceOracle(_dataSource)
     PushOracle(_handler)
   {}
 
