@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import './IOracle.sol';
+import "./IOracle.sol";
 
 contract BasicOracle is IOracle {
 
