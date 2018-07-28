@@ -14,12 +14,6 @@ contract('OwnedOracle', (accounts) => {
     oracle = await OwnedOracle.new()
   })
 
-  it('is initialized with the correct state', async () => {
-    await expectRevert(oracle.resultFor(0))
-    const isResultSet = await oracle.isResultSet()
-    isResultSet.should.equal(false)
-  })
-
   it('can set result by owner', async () => {
     await oracle.setResult(RESULT)
     const result = await oracle.resultFor(0)
