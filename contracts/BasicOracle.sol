@@ -4,20 +4,21 @@ import './IOracle.sol';
 
 contract BasicOracle is IOracle {
 
-  bytes32 public result;
-  bool _isResultSet;
+  bytes32 result;
+  bool resultIsSet;
 
   /*
    *  Public functions
    */
 
   function resultFor(bytes32 id) external view returns (bytes32) {
-    require(id == bytes32(0), "This oracle does not support ids");
+    require(id == bytes32(0), "This oracle does not support ids.");
+    require(isResultSet(), "The result has not been set.");
     return result;
   }
-  
-  function isResultSet() external view returns (bool) {
-    return _isResultSet;
+
+  function isResultSet() public view returns (bool) {
+    return resultIsSet;
   }
 
   /* 
@@ -25,9 +26,9 @@ contract BasicOracle is IOracle {
    */
 
   function _setResult(bytes32 _result) internal {
-    require(!_isResultSet);
+    require(!resultIsSet);
     result = _result;
-    _isResultSet = true;
+    resultIsSet = true;
     _resultWasSet(_result);
   }
 
