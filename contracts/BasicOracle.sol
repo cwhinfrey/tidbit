@@ -26,7 +26,7 @@ contract BasicOracle is IOracle {
    */
 
   function _setResult(bytes32 _result) internal {
-    require(!resultIsSet);
+    require(!resultIsSet, "Result has already been set.");
     result = _result;
     resultIsSet = true;
     _resultWasSet(_result);
