@@ -1,4 +1,3 @@
-import { toAscii } from 'web3-utils'
 import expectRevert from './helpers/expectRevert'
 import { web3 } from './helpers/w3'
 
