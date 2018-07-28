@@ -11,6 +11,10 @@ contract PushOracle is BasicOracle {
     handler = _handler;
   }
 
+  /*
+   *  Internal functions
+   */
+
   function _resultWasSet(bytes32 _result) internal {
     super._resultWasSet(_result);
     handler.receiveResult(0, _result);
