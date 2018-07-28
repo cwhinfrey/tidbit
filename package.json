@@ -30,6 +30,7 @@
     "solidity-coverage": "^0.5.5",
     "standard": "^10.0.3",
     "truffle": "^4.1.13",
+    "web3": "^1.0.0-beta.35",
     "web3-utils": "^1.0.0-beta.35"
   },
   "scripts": {
