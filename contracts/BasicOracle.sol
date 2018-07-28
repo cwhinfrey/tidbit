@@ -21,7 +21,7 @@ contract BasicOracle is IOracle {
     return resultIsSet;
   }
 
-  /* 
+  /*
    *  Internal functions
    */
 
@@ -32,7 +32,7 @@ contract BasicOracle is IOracle {
     _resultWasSet(_result);
   }
 
-  function _resultWasSet(bytes32 _result) internal {
+  function _resultWasSet(bytes32 /*_result*/) internal {
     // optional override
   }
 

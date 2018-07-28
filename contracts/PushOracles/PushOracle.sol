@@ -7,7 +7,7 @@ contract PushOracle is BasicOracle {
 
   IOracleHandler public handler;
 
-  constructor(IOracleHandler _handler) {
+  constructor(IOracleHandler _handler) public {
     handler = _handler;
   }
 
