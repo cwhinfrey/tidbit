@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "./IOracleHandler.sol";
-import "../BasicOracle.sol";
+import "../OracleBase.sol";
 
-contract PushOracle is BasicOracle {
+contract PushOracleBase is OracleBase {
 
   IOracleHandler public handler;
 

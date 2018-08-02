@@ -1,12 +1,12 @@
-const PushOracle = artifacts.require('PushOracle')
+const PushOracleBase = artifacts.require('PushOracleBase')
 
 require('chai').should()
 
-contract('PushOracle', (accounts) => {
+contract('PushOracleBase', (accounts) => {
   const handler = accounts[2]
 
   it('is initialized with the correct state', async () => {
-    const oracle = await PushOracle.new(handler)
+    const oracle = await PushOracleBase.new(handler)
     const handler = await oracle.handler()
     handler.should.equal(handler)
   })

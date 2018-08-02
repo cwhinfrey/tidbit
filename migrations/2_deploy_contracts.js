@@ -1,9 +1,9 @@
 /* global artifacts */
 
-const BasicOracle = artifacts.require('BasicOracle')
+const OracleBase = artifacts.require('OracleBase')
 
 module.exports = function (deployer) {
   deployer.deploy(
-    BasicOracle
+    OracleBase
   )
 }

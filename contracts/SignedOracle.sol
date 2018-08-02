@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
-import "./SingleSourceOracle.sol";
+import "./BasicOracle.sol";
 import "zeppelin-solidity/contracts/ECRecovery.sol";
 
-contract SignedOracle is SingleSourceOracle {
+contract SignedOracle is BasicOracle {
 
   constructor(
     address _dataSource
   )
-    SingleSourceOracle(_dataSource)
+    BasicOracle(_dataSource)
     public 
   {}
 

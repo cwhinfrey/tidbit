@@ -1,39 +1,19 @@
 pragma solidity ^0.4.24;
 
-import "./IOracle.sol";
+import "./OracleBase.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract BasicOracle is IOracle {
+contract BasicOracle is OracleBase, Ownable {
 
-  bytes32 result;
-  bool resultIsSet;
+  address public dataSource;
 
-  /*
-   *  Public functions
-   */
-
-  function resultFor(bytes32 id) external view returns (bytes32) {
-    require(id == bytes32(0), "This oracle does not support ids.");
-    require(isResultSet(), "The result has not been set.");
-    return result;
+  constructor(address _dataSource) public {
+    dataSource = _dataSource;
   }
 
-  function isResultSet() public view returns (bool) {
-    return resultIsSet;
-  }
-
-  /*
-   *  Internal functions
-   */
-
-  function _setResult(bytes32 _result) internal {
-    require(!resultIsSet, "Result has already been set.");
-    result = _result;
-    resultIsSet = true;
-    _resultWasSet(_result);
-  }
-
-  function _resultWasSet(bytes32 /*_result*/) internal {
-    // optional override
+  function setResult(bytes32 _result) public {
+    require(msg.sender == dataSource, "The caller is not the data source.");
+    _setResult(_result);
   }
 
 }
