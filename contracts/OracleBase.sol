@@ -7,6 +7,8 @@ contract OracleBase is IOracle {
   bytes32 result;
   bool resultIsSet;
 
+  event ResultSet(bytes32 _result, address _sender);
+
   /*
    *  Public functions
    */
@@ -29,6 +31,7 @@ contract OracleBase is IOracle {
     require(!resultIsSet, "Result has already been set.");
     result = _result;
     resultIsSet = true;
+    emit ResultSet(_result, msg.sender);
     _resultWasSet(_result);
   }
 

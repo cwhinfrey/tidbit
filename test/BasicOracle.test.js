@@ -1,5 +1,6 @@
-import { toAscii } from 'web3-utils'
+import { toAscii, fromAscii, padRight } from 'web3-utils'
 import expectRevert from './helpers/expectRevert'
+import expectEvent from './helpers/expectEvent'
 
 const BasicOracle = artifacts.require('BasicOracle')
 
@@ -28,5 +29,14 @@ contract('BasicOracle', (accounts) => {
   it('cannot be set twice', async () => {
     await oracle.setResult(RESULT, { from: dataSource })
     await expectRevert(oracle.setResult(RESULT, { from: dataSource }))
+  })
+
+  it('should emit ResultSet event', async () => {
+    const bytes32Result = padRight(fromAscii(RESULT), 64)
+    await expectEvent.inTransaction(
+      oracle.setResult(RESULT, { from: dataSource }),
+      'ResultSet',
+      { _result: bytes32Result, _sender: dataSource }
+    )
   })
 })
