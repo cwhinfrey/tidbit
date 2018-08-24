@@ -15,7 +15,7 @@ contract OracleBase is IOracle {
 
   event ResultSet(bytes32 _result, address _sender);
 
-  /*
+  /**
    *  Public functions
    */
 
@@ -38,7 +38,7 @@ contract OracleBase is IOracle {
     return resultIsSet;
   }
 
-  /*
+  /**
    *  Internal functions
    */
 
