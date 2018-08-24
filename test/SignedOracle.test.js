@@ -1,4 +1,5 @@
 import expectRevert from './helpers/expectRevert'
+import expectEvent from './helpers/expectEvent'
 import { web3 } from './helpers/w3'
 
 const SignedOracle = artifacts.require('SignedOracle')
@@ -36,5 +37,14 @@ contract('SignedOracle', (accounts) => {
     const secondHash = web3.utils.soliditySha3('another result');
     signature = await web3.eth.sign(secondHash, dataSource)
     await expectRevert(oracle.setResult(RESULT_HASH, signature))
+  })
+  
+  it('should emit ResultSet event', async () => {
+    const signature = await web3.eth.sign(RESULT_HASH, dataSource)
+    await expectEvent.inTransaction(
+      oracle.setResult(RESULT_HASH, signature),
+      'ResultSet',
+      { _result: RESULT_HASH, _sender: accounts[0] }
+    )
   })
 })
