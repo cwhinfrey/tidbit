@@ -1,0 +1,19 @@
+{
+  "contracts": {
+    "BasicOracle": {
+      "address": "0x7cc4b1851c35959d34e635a470f6b5c43ba3c9c9",
+      "constructorCode": "608060405234801561001057600080fd5b5061097e806100206000396000f300",
+      "bodyBytecodeHash": "bddc7b195a2734d900daf682a867f37f4866e494a7de9cc31f5ea1481b5c976f",
+      "bytecodeHash": "b9a08253955fcdc3d8cf0b893aabc39841108a032a76e6d1d4517850f08debe4"
+    }
+  },
+  "lib": true,
+  "frozen": false,
+  "package": {
+    "address": "0x0f5ea0a652e851678ebf77b69484bfcd31f9459b"
+  },
+  "provider": {
+    "address": "0xec8be1a5630364292e56d01129e8ee8a9578d7d8"
+  },
+  "version": "0.1.3"
+}
