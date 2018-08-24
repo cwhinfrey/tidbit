@@ -16,7 +16,7 @@ PushOracleBase --> BasicPushOracle --> SingedPushOracle
 
 ### Setup
 
-Then run `yarn install`
+Then run `npm install`
 
 `chmod +x ./scripts/**` to grant execute permissions on the scripts directory
 
@@ -25,15 +25,15 @@ Then run `yarn install`
 Recompile contracts and build artifacts.
 
 ```
-$ yarn compile
+$ npm tun compile
 ```
 
 ### Test
 
-Run `yarn compile` before first test run, and after any changes to the `.sol` files
+Run `npm run compile` before first test run, and after any changes to the `.sol` files
 
 ```
-$ yarn test
+$ npm test
 ```
 
-Run `yarn test:coverage` to run with coverage reporting
+Run `npm run test:coverage` to run with coverage reporting
