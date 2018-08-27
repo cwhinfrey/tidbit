@@ -15,14 +15,14 @@ contract OracleBase is IOracle {
 
   event ResultSet(bytes32 _result, address _sender);
 
-  /*
+  /**
    *  Public functions
    */
 
   /**
    * @dev Returns the result or reverts if it hasn't been set
    * @param id This is not used in single-event orcles and should be 0
-   * @returns The result or the oracle's single event
+   *  The result or the oracle's single event
    */
   function resultFor(bytes32 id) external view returns (bytes32) {
     require(id == bytes32(0), "This oracle does not support ids.");
@@ -32,13 +32,13 @@ contract OracleBase is IOracle {
 
   /**
    * @dev Checks if the result has been set
-   * @returns True if the result has been set
+   *  True if the result has been set
    */
   function isResultSet() public view returns (bool) {
     return resultIsSet;
   }
 
-  /*
+  /**
    *  Internal functions
    */
 
@@ -57,7 +57,6 @@ contract OracleBase is IOracle {
 
   /**
    * @dev Empty function meant to be overidden in subclasses
-   * @param _result The result of the oracle's single event
    */
   function _resultWasSet(bytes32 /*_result*/) internal {
     // optional override

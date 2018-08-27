@@ -1,0 +1,16 @@
+{
+  "docs-api": {
+    "PUSHORACLES": [
+      "PushOracles_BasicPushOracle",
+      "PushOracles_IOracleHandler",
+      "PushOracles_PushOracleBase",
+      "PushOracles_SignedPushOracle"
+    ],
+    "UNCATEGORIZED": [
+      "BasicOracle",
+      "IOracle",
+      "OracleBase",
+      "SignedOracle"
+    ]
+  }
+}

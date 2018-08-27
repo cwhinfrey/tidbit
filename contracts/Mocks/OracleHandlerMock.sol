@@ -6,7 +6,7 @@ contract OracleHandlerMock is IOracleHandler {
 
   bytes32 public result;
 
-  function receiveResult(bytes32 id, bytes32 _result) external {
+  function receiveResult(bytes32 /*id*/, bytes32 _result) external {
     result = _result;
   }
 }
