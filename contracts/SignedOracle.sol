@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./BasicOracle.sol";
-import "zeppelin-solidity/contracts/ECRecovery.sol";
+import "openzeppelin-solidity/contracts/ECRecovery.sol";
 
 /**
  * @title SignedOracle
