@@ -41,6 +41,7 @@
   },
   "scripts": {
     "build": "node scripts/build.js",
+    "build-docs": "scripts/buildDocs.sh",
     "cleanup": "rm -rf build/ && mkdir build && rm -rf lib/ && mkdir lib",
     "compile": "npm run cleanup && truffle compile --all && npm run build",
     "deploy": "npm run cleanup && truffle migrate --reset && npm run build",
