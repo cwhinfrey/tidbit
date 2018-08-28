@@ -29,7 +29,7 @@ contract('PaidOracle', (accounts) => {
 		)
 	})
 
-	it('Reward should be the contract balance if its less than the reward, otherwise return reward itself.', async () => {
+	it('reward should be the contract balance if its less than the reward, otherwise return reward itself.', async () => {
 		const contractBalance = await web3.eth.getBalance(oracle.address)
 		const oracleReward = await oracle.getReward()
 		const amount = Math.min(contractBalance, reward)
@@ -41,6 +41,28 @@ contract('PaidOracle', (accounts) => {
 	  await expectRevert (
 	  	oracle.setResult(RESULT, { from: dataSource })
 	  )
+	})
+
+	it('isResultSet should be flipped after result was set', async () => {
+	  let isResultSet = await oracle.isResultSet()
+	  isResultSet.should.equal(false)
+
+	  await oracle.setResult(RESULT, {from: dataSource })
+	  isResultSet = await oracle.isResultSet()
+	  isResultSet.should.equal(true)
+	})
+
+	it('should pay out reward', async () => {	  
+	  const dataSourceOriginalBalance = await web3.eth.getBalance(dataSource)
+	  dataSourceOriginalBalance.should.be.bignumber.equal(web3.utils.toWei('1000000', 'ether'))
+	 
+	  await oracle.setResult(RESULT, {from: dataSource })	 
+
+	  const dataSourceBalance = await web3.eth.getBalance(dataSource)
+	  console.log("dataSourceBalance: " + dataSourceBalance / 1000000000000000000)
+	  const expectedBalance = web3.utils.toWei('1000010', 'ether')
+	  // gas cost is tiny here
+	  dataSourceBalance.should.be.bignumber.gt(expectedBalance - 0.01)
 	})
 
 })
