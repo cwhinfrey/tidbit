@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./IOracleHandler.sol";
-import "../OracleBase.sol";
+import "../Oracles/OracleBase.sol";
 
 /**
  * @title PushOracleBase
