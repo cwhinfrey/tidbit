@@ -14,8 +14,8 @@ const siteConfig = {
   projectName: 'tidbit',
   headerLinks: [
     {
-      doc: 'IOracle',
-      label: 'API',
+      doc: 'Oracles_IOracle',
+      label: 'Docs',
     },
     {
       href: 'https://github.com/levelkdev/tidbit',
