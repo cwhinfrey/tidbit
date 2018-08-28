@@ -25,7 +25,7 @@ Then run `npm install`
 Recompile contracts and build artifacts.
 
 ```
-$ npm tun compile
+$ npm run compile
 ```
 
 ### Test
