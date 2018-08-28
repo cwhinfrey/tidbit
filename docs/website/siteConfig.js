@@ -9,7 +9,7 @@ const siteConfig = {
   title: 'Tidbit',
   tagline: 'A library for oracles on Ethereum.',
   url: 'https://tidbit.org',
-  baseUrl: '/',
+  baseUrl: '/tidbit/',
   organizationName: 'levelkdev',
   projectName: 'tidbit',
   headerLinks: [
