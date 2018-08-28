@@ -8,9 +8,10 @@ First, generate documentation by running `npm run build-docs` in the `tidbit` re
 
 Then, to deploy the docs to Github pages, navigate to the `docs/website/` directory and run:
 
-```
+```bash
 GIT_USER=<GIT_USER> \
-  USE_SSH=true \ #optional
+  USE_SSH=true \
   npm run publish-gh-pages
+# USE_SSH environment var is optional
 ```
 (must have write permissions)
