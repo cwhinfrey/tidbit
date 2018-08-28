@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./PushOracleBase.sol";
-import "../SignedOracle.sol";
+import "../Oracles/SignedOracle.sol";
 
 /**
  * @title SignedPushOracle
