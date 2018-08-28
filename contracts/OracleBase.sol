@@ -26,15 +26,15 @@ contract OracleBase is IOracle {
    */
   function resultFor(bytes32 id) external view returns (bytes32) {
     require(id == bytes32(0), "This oracle does not support ids.");
-    require(isResultSet(), "The result has not been set.");
+    require(isResultSet(id), "The result has not been set.");
     return result;
   }
 
   /**
    * @dev Checks if the result has been set
-   *  True if the result has been set
+   * @return True if the result has been set
    */
-  function isResultSet() public view returns (bool) {
+  function isResultSet(bytes32 /*id*/) public view returns (bool) {
     return resultIsSet;
   }
 

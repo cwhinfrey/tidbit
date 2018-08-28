@@ -18,12 +18,19 @@ contract('BasicOracle', (accounts) => {
 
   it('can set result by owner', async () => {
     await oracle.setResult(RESULT, { from: dataSource })
+
     const result = await oracle.resultFor(0)
     toAscii(result).replace(/\u0000/g, '').should.equal(RESULT)
+
+    const isResultSet = await oracle.isResultSet(0)
+    isResultSet.should.equal(true)
   })
 
   it('cannot be set by a different data source', async () => {
     await expectRevert(oracle.setResult(RESULT, { from: accounts[2] }))
+
+    const isResultSet = await oracle.isResultSet(0)
+    isResultSet.should.equal(false)
   })
 
   it('cannot be set twice', async () => {
