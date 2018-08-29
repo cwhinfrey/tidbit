@@ -3,8 +3,7 @@ import expectEvent from './helpers/expectEvent'
 import { web3 } from './helpers/w3'
 
 const PaidOracle = artifacts.require('PaidOracle')
-const BigNumber = web3.BigNumber
-const toBN = web3.utils.toBN
+const BigNumber = require('bignumber.js');
 
 const should = require('chai')
 	.use(require('chai-bignumber')(BigNumber))
@@ -36,6 +35,17 @@ contract('PaidOracle', (accounts) => {
 		oracleReward.should.be.bignumber.equal(amount)
 	})
 
+	it('should pay out reward', async () => {
+	  const dataSourceOriginalBalance = await web3.eth.getBalance(dataSource)
+	  dataSourceOriginalBalance.should.be.bignumber.equal(web3.utils.toWei('1000000', 'ether'))
+
+	  await oracle.setResult(RESULT, {from: dataSource })
+
+	  const dataSourceBalance = await web3.eth.getBalance(dataSource)
+	  console.log(dataSourceBalance)
+	  '1000010'.should.be.bignumber.equal(web3.utils.fromWei(dataSourceBalance, 'ether'), 2, BigNumber.ROUND_UP)
+	})
+
 	it('cannot pay out reward when the result was set twice', async () => {
 	  await oracle.setResult(RESULT, {from: dataSource })
 	  await expectRevert (
@@ -44,25 +54,11 @@ contract('PaidOracle', (accounts) => {
 	})
 
 	it('isResultSet should be flipped after result was set', async () => {
-	  let isResultSet = await oracle.isResultSet()
+	  let isResultSet = await oracle.isResultSet(0)
 	  isResultSet.should.equal(false)
 
 	  await oracle.setResult(RESULT, {from: dataSource })
-	  isResultSet = await oracle.isResultSet()
+	  isResultSet = await oracle.isResultSet(0)
 	  isResultSet.should.equal(true)
 	})
-
-	it('should pay out reward', async () => {	  
-	  const dataSourceOriginalBalance = await web3.eth.getBalance(dataSource)
-	  dataSourceOriginalBalance.should.be.bignumber.equal(web3.utils.toWei('1000000', 'ether'))
-	 
-	  await oracle.setResult(RESULT, {from: dataSource })	 
-
-	  const dataSourceBalance = await web3.eth.getBalance(dataSource)
-	  console.log("dataSourceBalance: " + dataSourceBalance / 1000000000000000000)
-	  const expectedBalance = web3.utils.toWei('1000010', 'ether')
-	  // gas cost is tiny here
-	  dataSourceBalance.should.be.bignumber.gt(expectedBalance - 0.01)
-	})
-
 })

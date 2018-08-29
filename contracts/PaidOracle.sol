@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./BasicOracle.sol";
+import "./Oracles/BasicOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -35,10 +35,10 @@ contract PaidOracle is BasicOracle {
   /*
    *  Internal functions
    */
-  function _resultWasSet()
-  internal
+  function _resultWasSet(bytes32 /*_result*/)
+    internal
   {
-    require(isResultSet(), "Result hasn't been set yet.");
+    require(resultIsSet, "Result hasn't been set yet.");
     require(dataSource != address(0));
     dataSource.transfer(getReward());
   }
