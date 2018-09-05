@@ -8,7 +8,7 @@
     ],
     "PUSHORACLES": [
       "PushOracles_BasicPushOracle",
-      "PushOracles_IOracleHandler",
+      "PushOracles_IOracleConsumer",
       "PushOracles_PushOracleBase",
       "PushOracles_SignedPushOracle"
     ]

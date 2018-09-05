@@ -1,4 +1,4 @@
-import { toAscii, fromAscii, padRight } from 'web3-utils'
+import { toAscii, fromAscii } from 'web3-utils'
 import expectRevert from './helpers/expectRevert'
 import expectEvent from './helpers/expectEvent'
 
@@ -39,7 +39,7 @@ contract('BasicOracle', (accounts) => {
   })
 
   it('should emit ResultSet event', async () => {
-    const bytes32Result = padRight(fromAscii(RESULT), 64)
+    const bytes32Result = fromAscii(RESULT)
     await expectEvent.inTransaction(
       oracle.setResult(RESULT, { from: dataSource }),
       'ResultSet',
