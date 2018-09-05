@@ -1,8 +1,8 @@
 pragma solidity ^0.4.24;
 
-import "../PushOracles/IOracleHandler.sol";
+import "../PushOracles/IOracleConsumer.sol";
 
-contract OracleHandlerMock is IOracleHandler {
+contract OracleConsumerMock is IOracleConsumer {
 
   bytes32 public result;
 
