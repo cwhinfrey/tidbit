@@ -35,7 +35,7 @@ contract PaidOracle is BasicOracle {
   /*
    *  Internal functions
    */
-  function _resultWasSet(bytes32 /*_result*/)
+  function _resultWasSet(bytes /*_result*/)
     internal
   {
     require(resultIsSet, "Result hasn't been set yet.");
