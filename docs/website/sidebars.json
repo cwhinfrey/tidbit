@@ -4,6 +4,7 @@
       "Oracles_BasicOracle",
       "Oracles_IOracle",
       "Oracles_OracleBase",
+      "Oracles_PaidOracle",
       "Oracles_SignedOracle"
     ],
     "PUSHORACLES": [
