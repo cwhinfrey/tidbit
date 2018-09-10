@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./Oracles/BasicOracle.sol";
+import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
