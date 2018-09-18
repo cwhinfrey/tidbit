@@ -11,7 +11,8 @@ const should = require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-const RESULT = 'hello multiOracle'
+const RESULT = 'hello oracle1'
+const RESULT2 = 'hello oracle2'
 
 contract('MultiOracle', (accounts) => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -27,10 +28,11 @@ contract('MultiOracle', (accounts) => {
     await expectRevert(oracle.newOracle(0, ZERO_ADDRESS))
   })
 
-  // it('cannot set the same id twice', async () => {
-  //   await oracle.newOracle(0, dataSource1)
-  //   await expectRevert(oracle.newOracle(0, dataSource2))
-  // })
+  it('cannot set result for the same id twice', async () => {
+    await oracle.newOracle(0, dataSource1)
+    await oracle.setResult(0, RESULT, { from: dataSource1 })
+    await expectRevert(oracle.setResult(0, RESULT2, { from: dataSource1 }))
+  })
 
   it('is initialized with the correct state', async () => {
     await expectRevert(oracle.resultFor(1))

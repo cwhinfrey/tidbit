@@ -82,7 +82,6 @@ contract MultiOracle is IOracle, Ownable {
     bytes32 _id, 
     address _dataSource
   )
-    internal
     onlyOwner
     onlyIfValidAddress(_dataSource)
   {       
