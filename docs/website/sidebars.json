@@ -4,11 +4,12 @@
       "Oracles_BasicOracle",
       "Oracles_IOracle",
       "Oracles_OracleBase",
+      "Oracles_PaidOracle",
       "Oracles_SignedOracle"
     ],
     "PUSHORACLES": [
       "PushOracles_BasicPushOracle",
-      "PushOracles_IOracleHandler",
+      "PushOracles_IOracleConsumer",
       "PushOracles_PushOracleBase",
       "PushOracles_SignedPushOracle"
     ]

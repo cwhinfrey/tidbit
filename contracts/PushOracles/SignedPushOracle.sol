@@ -12,16 +12,16 @@ contract SignedPushOracle is SignedOracle, PushOracleBase {
   /**
    * @dev SignedPushOracle constructor
    * @param _dataSource The address that is able to set the result
-   * @param _handler A contract that implements IOracleHandler and is called when
+   * @param _consumer A contract that implements IOracleConsumer and is called when
    * the result has been set.
    */
   constructor (
     address _dataSource,
-    IOracleHandler _handler
+    IOracleConsumer _consumer
   )
     public
     SignedOracle(_dataSource)
-    PushOracleBase(_handler)
+    PushOracleBase(_consumer)
   {}
 
 }

@@ -1,7 +1,7 @@
 import { toAscii } from 'web3-utils'
 
 const BasicPushOracle = artifacts.require('BasicPushOracle')
-const OracleHandlerMock = artifacts.require('OracleHandlerMock')
+const OracleConsumerMock = artifacts.require('OracleConsumerMock')
 
 require('chai').should()
 
@@ -10,11 +10,11 @@ const RESULT = 'hello oracle'
 contract('BasicPushOracle', (accounts) => {
   const dataSource = accounts[1]
 
-  it('calls receiveResult() on OracleHandler', async () => {
-    const oracleHandler = await OracleHandlerMock.new()
-    const oracle = await BasicPushOracle.new(dataSource, oracleHandler.address)
+  it('calls receiveResult() on OracleConsumer', async () => {
+    const oracleConsumer = await OracleConsumerMock.new()
+    const oracle = await BasicPushOracle.new(dataSource, oracleConsumer.address)
     await oracle.setResult(RESULT, { from: dataSource })
-    const result = await oracleHandler.result()
+    const result = await oracleConsumer.result()
     toAscii(result).replace(/\u0000/g, '').should.equal(RESULT)
   })
 })

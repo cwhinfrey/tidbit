@@ -23,7 +23,7 @@ contract BasicOracle is OracleBase {
    * @dev Sets the result of the oracle
    * @param _result The result being set
    */
-  function setResult(bytes32 _result) public {
+  function setResult(bytes _result) public {
     require(msg.sender == dataSource, "The caller is not the data source.");
     _setResult(_result);
   }
