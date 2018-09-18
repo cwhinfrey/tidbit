@@ -31,6 +31,26 @@ contract MultiOracle is IOracle, Ownable {
    *  Public functions
    */
 
+ /**
+  * @dev Sets the result of the oracle
+  * @param id The id being set
+  * @param result The result being set
+  */
+  function setResult(
+    bytes32 id,
+    bytes result
+  )
+    public
+  {
+    require(msg.sender == results[id].dataSource, "The caller is not the valid data source with given id.");
+    _setResult(id, result);
+  }
+
+  /**
+   * @dev Returns the result or reverts if it hasn't been set
+   * @param id The id to identify oracle
+   *  The result or the oracle's single event
+   */
   function resultFor(bytes32 id) 
     external 
     view 
@@ -41,6 +61,11 @@ contract MultiOracle is IOracle, Ownable {
     return results[id].result;
   }
 
+  /**
+   * @dev Checks if the result has been set
+   * @param id The id to identify oracle
+   * @return True if the result has been set
+   */
   function isResultSet(bytes32 id)
     public
     view
