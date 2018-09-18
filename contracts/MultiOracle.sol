@@ -1,19 +1,19 @@
 pragma solidity ^0.4.24;
 
-import "./IOracle.sol";
+import "./Oracles/IOracle.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract MultiOracle is IOracle, Ownable {
 
   struct OracleData {
     address dataSource;
-    bytes32 result;
+    bytes result;
     bool resultIsSet;
   }
 
   mapping (bytes32 => OracleData) results; // id to result map
 
-  event ResultSet(bytes32 _id, bytes32 _result, address _sender);
+  event ResultSet(bytes32 _id, bytes _result, address _sender);
 
   constructor() public {}
 
@@ -35,7 +35,7 @@ contract MultiOracle is IOracle, Ownable {
     external 
     view 
     returns 
-    (bytes32) 
+    (bytes)
   {
     require(isResultSet(id), "The result has not been set.");
     return results[id].result;
@@ -65,9 +65,15 @@ contract MultiOracle is IOracle, Ownable {
     results[_id].dataSource = _dataSource;
   }
 
+  /**
+   * @dev Set's the result, emits ResultSet, and calls the _resultWasSet()
+   * overridable function
+   * @param _result The result of the oracle's single event.
+   * @param _id The id to identify single oracle.
+   */
   function _setResult(
     bytes32 _id, 
-    bytes32 _result
+    bytes _result
   ) 
     internal
   {
@@ -78,10 +84,10 @@ contract MultiOracle is IOracle, Ownable {
     _resultWasSet(_id, _result);
   }
 
-  /*
-   *  Internal functions
+  /**
+   * @dev Empty function meant to be overidden in subclasses
    */
-  function _resultWasSet(bytes32 /*_id*/, bytes32 /*_result*/) 
+  function _resultWasSet(bytes32 /*_id*/, bytes /*_result*/)
     internal 
   {
     // optional override
