@@ -75,6 +75,11 @@ contract MultiOracle is IOracle, Ownable {
     return results[id].resultIsSet;
   }
 
+  /**
+   * @dev Checks if the oracle has been set
+   * @param id The id to identify oracle
+   * @return True if the oracle has been set
+  */
   function isOracleSet(bytes32 id)
     public
     view
