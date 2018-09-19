@@ -75,6 +75,15 @@ contract MultiOracle is IOracle, Ownable {
     return results[id].resultIsSet;
   }
 
+  function isOracleSet(bytes32 id)
+    public
+    view
+    returns
+    (bool)
+  {
+    return results[id].dataSource != address(0);
+  }
+
    /**
    * @dev Only owner could add a new oracle with id and dataSource information
    */
@@ -86,9 +95,14 @@ contract MultiOracle is IOracle, Ownable {
     onlyOwner
     onlyIfValidAddress(_dataSource)
   {       
+    require(!isOracleSet(_id), "Oracle with the given id has already been set.");
     require(!isResultSet(_id), "Result has already been set.");
     results[_id].dataSource = _dataSource;
   }
+
+  /*
+   *  Internal functions
+   */
 
   /**
    * @dev Set's the result, emits ResultSet, and calls the _resultWasSet()

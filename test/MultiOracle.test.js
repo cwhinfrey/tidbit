@@ -28,16 +28,29 @@ contract('MultiOracle', (accounts) => {
     await expectRevert(oracle.newOracle(0, ZERO_ADDRESS))
   })
 
+  it('is initialized with the correct state with unset results', async () => {
+    await expectRevert(oracle.resultFor(1))
+    const isResultSet = await oracle.isResultSet(1)
+    isResultSet.should.equal(false)
+  })
+
+  it('is initialized with the correct state with unset oracles', async () => {
+    const isOracleSet0 = await oracle.isOracleSet(0)
+    isOracleSet0.should.equal(false)
+
+    const isOracleSet1 = await oracle.isOracleSet(1)
+    isOracleSet1.should.equal(false)
+  })
+
   it('cannot set result for the same id twice', async () => {
     await oracle.newOracle(0, dataSource1)
     await oracle.setResult(0, RESULT, { from: dataSource1 })
     await expectRevert(oracle.setResult(0, RESULT2, { from: dataSource1 }))
   })
 
-  it('is initialized with the correct state', async () => {
-    await expectRevert(oracle.resultFor(1))
-    const isResultSet = await oracle.isResultSet(1)
-    isResultSet.should.equal(false)
+  it('cannot set oracle for the same id twice', async () => {
+    await oracle.newOracle(0, dataSource1)
+    await expectRevert(oracle.newOracle(0, dataSource2))
   })
 
   it('can set result only by added dataSource', async () => {
