@@ -21,7 +21,7 @@ contract MultiOracle is IOracle, Ownable {
    * @dev Throws if operator is not dataSource.
    * @param _operator address
    */
-  modifier onlyIfValidAddress(address _operator) 
+  modifier onlyIfValidAddress(address _operator)
   {
     require(_operator != address(0), "Invalid dataSource.");
     _;
@@ -52,9 +52,9 @@ contract MultiOracle is IOracle, Ownable {
    *  The result or the oracle's single event
    */
   function resultFor(bytes32 id) 
-    external 
-    view 
-    returns 
+    external
+    view
+    returns
     (bytes)
   {
     require(isResultSet(id), "The result has not been set.");
@@ -89,17 +89,17 @@ contract MultiOracle is IOracle, Ownable {
     return results[id].dataSource != address(0);
   }
 
-   /**
+  /**
    * @dev Only owner could add a new oracle with id and dataSource information
    */
   function newOracle(
-    bytes32 _id, 
+    bytes32 _id,
     address _dataSource
   )
     public
     onlyOwner
     onlyIfValidAddress(_dataSource)
-  {       
+  {
     require(!isOracleSet(_id), "Oracle with the given id has already been set.");
     require(!isResultSet(_id), "Result has already been set.");
     results[_id].dataSource = _dataSource;
@@ -118,7 +118,7 @@ contract MultiOracle is IOracle, Ownable {
   function _setResult(
     bytes32 _id, 
     bytes _result
-  ) 
+  )
     internal
   {
     require(!isResultSet(_id), "Result has already been set.");
@@ -132,7 +132,7 @@ contract MultiOracle is IOracle, Ownable {
    * @dev Empty function meant to be overidden in subclasses
    */
   function _resultWasSet(bytes32 /*_id*/, bytes /*_result*/)
-    internal 
+    internal
   {
     // optional override
   }
