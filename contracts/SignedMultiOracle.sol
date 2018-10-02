@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./MultiOracle.sol";
-import "./Oracles/SignedOracle.sol";
+import "openzeppelin-solidity/contracts/ECRecovery.sol";
 
 /**
  * @title SignedMultiOracle
@@ -21,7 +21,7 @@ contract SignedMultiOracle is MultiOracle {
    * @param _result The result being set
    * @param _signature The hash of the result signed by the data source
    */
-   function setResult(
+   function setResultWithSignature(
      bytes32 _id,
      bytes _result,
      bytes _signature
