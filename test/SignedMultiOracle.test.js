@@ -58,11 +58,13 @@ contract('SignedMultiOracle', (accounts) => {
   })
 
   it('should emit ResultSet event', async () => {
+    // hard-coded here since web3.utils.fromAscii won't return 32 bytes hex string
+    const bytes32Id = '0x1000000000000000000000000000000000000000000000000000000000000000'
     const signature = await web3.eth.sign(RESULT_HASH1, signer1)
     await expectEvent.inTransaction(
-      oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1}),
+      oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 }),
       'ResultSet',
-      {_result: RESULT_HASH1, _sender: signer1 }
+      {_id: bytes32Id, _result: RESULT_HASH1, _sender: signer1 }
     )
   })
 })
