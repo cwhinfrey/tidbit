@@ -13,6 +13,7 @@ const RESULT2 = 'hello SignedMultiOracle2'
 const RESULT_HASH2 = web3.utils.soliditySha3(RESULT2);
 
 contract('SignedMultiOracle', (accounts) => {
+  const signer0 = accounts[0]
   const signer1 = accounts[1]
   const signer2 = accounts[2]
   const id1 = '1'
@@ -41,23 +42,18 @@ contract('SignedMultiOracle', (accounts) => {
     isResultSet2.should.equal(true)
   })
 
-  it('cannot be set by a different signers', async () => {
-    const signature = await web3.eth.sign(RESULT_HASH1, accounts[0])
+  it('cannot be set by a different signer', async () => {
+    const signature = await web3.eth.sign(RESULT_HASH1, signer0)
     await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1}))
   })
 
-  it('cannot be set twice with a given id', async () => {
+  it('cannont be set with the same id twice', async () => {
     let signature = await web3.eth.sign(RESULT_HASH1, signer1)
     await oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 })
+    await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 }))
 
     const secondHash = web3.utils.soliditySha3('another result');
     signature = await web3.eth.sign(secondHash, signer1)
-    await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 }))
-  })
-
-  it('cannot be set the same id twice', async () => {
-    let signature = await web3.eth.sign(RESULT_HASH1, signer1)
-    await oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 })
     await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 }))
   })
 
@@ -66,7 +62,7 @@ contract('SignedMultiOracle', (accounts) => {
     await expectEvent.inTransaction(
       oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1}),
       'ResultSet',
-      { _result: RESULT_HASH1, _sender: accounts[1] }
+      {_result: RESULT_HASH1, _sender: signer1 }
     )
   })
 })
