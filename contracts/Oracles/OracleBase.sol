@@ -4,8 +4,9 @@ import "./IOracle.sol";
 
 /**
  * @title OracleBase
- * @dev Lays out generic single-event oracle functionality but doesn't implement 
- * a method to set the result
+ * @dev Lays out generic single-event oracle functionality. It implements 
+ * an internal function to set the result that can be called by public
+ * functions that extend OracleBase.
  */
  
 contract OracleBase is IOracle {
@@ -21,8 +22,8 @@ contract OracleBase is IOracle {
 
   /**
    * @dev Returns the result or reverts if it hasn't been set
-   * @param id This is not used in single-event orcles and should be 0
-   *  The result or the oracle's single event
+   * @param id This is not used in single-event oracles and should be 0
+   * @return The result or the oracle's single event
    */
   function resultFor(bytes32 id) external view returns (bytes) {
     require(id == bytes32(0), "This oracle does not support ids.");
