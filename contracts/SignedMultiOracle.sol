@@ -8,13 +8,6 @@ import "openzeppelin-solidity/contracts/ECRecovery.sol";
  * @dev Extends MultiOracle to use signed messages
  */
 contract SignedMultiOracle is MultiOracle {
-
-  /**
-   * @dev SignedPushOracle constructor
-   */
- 
-  constructor() public {}
-
   /**
    * @dev Sets the result of the oracle
    * @param _id The id being set
@@ -28,7 +21,6 @@ contract SignedMultiOracle is MultiOracle {
    )
      public
    {
-     require(msg.sender == results[_id].dataSource, "The caller is not the valid data source with given id.");
      // Generate message hash
      bytes memory prefix = "\x19Ethereum Signed Message:\n32";
      bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _result));
