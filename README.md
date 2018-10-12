@@ -15,7 +15,7 @@ IOracle
 OracleBase --------> BasicOracle ------> SignedOracle
    |                      |                   |
    v                      v                   v
-PushOracleBase --> BasicPushOracle --> SingedPushOracle
+PushOracleBase --> BasicPushOracle --> SignedPushOracle
 ```
 
 ### Setup
