@@ -4,6 +4,12 @@ import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+/**
+ * @title PaidOracle
+ * @dev BasicOracle with reward set in constructor. The reward is transfered to 
+ * dataSource when the result is successfully set.
+ */
+
 contract PaidOracle is BasicOracle {
 
   uint256 public reward;
