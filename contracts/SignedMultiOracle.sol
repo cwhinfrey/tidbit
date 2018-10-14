@@ -9,7 +9,9 @@ import "openzeppelin-solidity/contracts/ECRecovery.sol";
  */
 contract SignedMultiOracle is MultiOracle {
   /**
-   * @dev Sets the result of the oracle
+   * @dev Sets the result of the oracle with a signed message.
+   * To resolve the issue that truffle not supporting function overrides,
+   * rename `setResult` method to be `setResultWithSignature`.
    * @param _id The id being set
    * @param _result The result being set
    * @param _signature The hash of the result signed by the data source

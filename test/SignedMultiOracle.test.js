@@ -47,7 +47,7 @@ contract('SignedMultiOracle', (accounts) => {
     await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1}))
   })
 
-  it('cannont be set with the same id twice', async () => {
+  it('cannot be set with the same id twice', async () => {
     let signature = await web3.eth.sign(RESULT_HASH1, signer1)
     await oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 })
     await expectRevert(oracle.setResultWithSignature(id1, RESULT_HASH1, signature, { from: signer1 }))
