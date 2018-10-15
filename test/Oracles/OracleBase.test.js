@@ -1,4 +1,4 @@
-import expectRevert from './helpers/expectRevert'
+import expectRevert from '../helpers/expectRevert'
 
 const OracleBase = artifacts.require('OracleBase')
 

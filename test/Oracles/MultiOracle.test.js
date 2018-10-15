@@ -1,7 +1,7 @@
 import { toAscii, fromAscii } from 'web3-utils'
-import expectRevert from './helpers/expectRevert'
-import expectEvent from './helpers/expectEvent'
-import { web3 } from './helpers/w3'
+import expectRevert from '../helpers/expectRevert'
+import expectEvent from '../helpers/expectEvent'
+import { web3 } from '../helpers/w3'
 
 const MultiOracle = artifacts.require('MultiOracle')
 
