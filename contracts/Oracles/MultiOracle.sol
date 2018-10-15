@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./Oracles/IOracle.sol";
+import "./IOracle.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract MultiOracle is IOracle, Ownable {
@@ -48,8 +48,8 @@ contract MultiOracle is IOracle, Ownable {
 
   /**
    * @dev Returns the result or reverts if it hasn't been set
-   * @param id The id to identify oracle
-   *  The result or the oracle's single event
+   * @param id The id to identify the oracle
+   * @return The result or the oracle's single event
    */
   function resultFor(bytes32 id) 
     external
@@ -77,7 +77,7 @@ contract MultiOracle is IOracle, Ownable {
 
   /**
    * @dev Checks if the oracle has been set
-   * @param id The id to identify oracle
+   * @param id The id to identify the oracle
    * @return True if the oracle has been set
   */
   function isOracleSet(bytes32 id)
