@@ -1,15 +1,18 @@
 pragma solidity ^0.4.24;
 
-import "./Oracles/IOracle.sol";
-import "./Oracles/OracleBase.sol";
-import "./Utils/OrderStatisticTree.sol";
+import "./IOracle.sol";
+import "./OracleBase.sol";
+import "../Utils/OrderStatisticTree.sol";
 
 /**
  * @title AveragedOracle
+ * @dev Takes the result of a set of sub-oracles,
+ * converts the results to uints, and sets the result to the median value.
  */
 contract AveragedOracle is OracleBase, OrderStatisticTree {
 
   IOracle[] oracles;
+
   /**
    * @dev AveragedOracle constructor
    * @param _oracles The sub oracles array to initilize the AveragedOracle
@@ -55,7 +58,7 @@ contract AveragedOracle is OracleBase, OrderStatisticTree {
 
   function toBytes(uint256 x) private pure returns (bytes b) {
       //TODO: This will return bytes32 instead of dynamic length of bytes.
-      //Solidity will store bytes32 more efficiently.
+      //Solidity will store bytes32 more efficiently than bytes.
       b = new bytes(32);
       assembly { mstore(add(b, 32), x) }
   }

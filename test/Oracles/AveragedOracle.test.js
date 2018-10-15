@@ -1,5 +1,5 @@
-import { web3 } from './helpers/w3'
-import expectRevert from './helpers/expectRevert'
+import { web3 } from '../helpers/w3'
+import expectRevert from '../helpers/expectRevert'
 
 const AveragedOracle = artifacts.require('AveragedOracle')
 const BasicOracle = artifacts.require('BasicOracle')
@@ -23,18 +23,18 @@ contract('AveragedOracle', (accounts) => {
     oracle3 = await BasicOracle.new(dataSource3)
   })
 
-  it('cannot initilize AveragedOracle with empty oracle array', async () => {
+  it('cannot initilize AveragedOracle with empty oracle array.', async () => {
     await expectRevert(AveragedOracle.new([]))
   })
 
-  it('cannot setResult if any of the sub-oracles have not been set yet.', async () => {
+  it('cannot set result if any of the sub-oracles have not been set yet.', async () => {
     const averagedOracle = await AveragedOracle.new([oracle1.address, oracle2.address, oracle3.address])
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await expectRevert(averagedOracle.setResult())
   })
 
-  it('setResult to the median value', async () => {
+  it('set result to the median value', async () => {
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await oracle3.setResult(RESULT3, { from: dataSource3 })
@@ -44,7 +44,7 @@ contract('AveragedOracle', (accounts) => {
     web3.utils.hexToUtf8(medianValue).should.equal('10')
   })
 
-  it('setResult to the media value even with duplicated value in sub-oracles', async () => {
+  it('set result to the median value even with duplicated value in sub-oracles', async () => {
     oracle4 = await BasicOracle.new(dataSource4)
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })

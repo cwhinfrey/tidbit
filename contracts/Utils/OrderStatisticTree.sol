@@ -267,7 +267,7 @@ contract OrderStatisticTree {
                 if (cur<=value){
                     if(cur<value)
                         smaller+=1+cur_node.dupes;
-                    uint left_child=+cur_node.children[false];
+                    uint left_child=cur_node.children[false];
                     if (left_child!=0)
                         smaller+=nodes[left_child].count;
                 }
