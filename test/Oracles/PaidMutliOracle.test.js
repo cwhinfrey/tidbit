@@ -1,6 +1,6 @@
-import expectRevert from './helpers/expectRevert'
-import expectEvent from './helpers/expectEvent'
-import { web3 } from './helpers/w3'
+import expectRevert from '../helpers/expectRevert'
+import expectEvent from '../helpers/expectEvent'
+import { web3 } from '../helpers/w3'
 
 const PaidMultiOracle = artifacts.require('PaidMultiOracle')
 const BigNumber = require('bignumber.js');

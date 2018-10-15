@@ -1,6 +1,6 @@
-import expectEvent from './helpers/expectEvent'
-import expectRevert from './helpers/expectRevert'
-import { web3 } from './helpers/w3'
+import expectEvent from '../helpers/expectEvent'
+import expectRevert from '../helpers/expectRevert'
+import { web3 } from '../helpers/w3'
 
 const SignedMultiOracle = artifacts.require('SignedMultiOracle')
 

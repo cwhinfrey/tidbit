@@ -1,6 +1,6 @@
 import { toAscii, fromAscii } from 'web3-utils'
-import expectRevert from './helpers/expectRevert'
-import expectEvent from './helpers/expectEvent'
+import expectRevert from '../helpers/expectRevert'
+import expectEvent from '../helpers/expectEvent'
 
 const BasicOracle = artifacts.require('BasicOracle')
 
