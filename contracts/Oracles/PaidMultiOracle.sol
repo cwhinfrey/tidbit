@@ -13,7 +13,7 @@ contract PaidMultiOracle is MultiOracle {
 
   uint256 public reward;
 
-  constructor(uint256 _reward) MultiOracle() public payable //TODO is MultiOracle() right? 
+  constructor(uint256 _reward) public payable
   {
     reward = _reward;
   }

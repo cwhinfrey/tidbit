@@ -20,27 +20,27 @@ contract('PaidMultiOracle', (accounts) => {
   const contractBalance = web3.utils.toWei('100', 'ether')
   const contractBalance2 = web3.utils.toWei('5', 'ether')
 
-  let oracle
+  let multiOracle
   beforeEach(async ()=> {
-    oracle = await PaidMultiOracle.new(reward, {value: contractBalance})
+    multiOracle = await PaidMultiOracle.new(reward, {value: contractBalance})
   })
 
   it('getReward should return the reward if the contractBalance is greater than the reward', async () => {
-    const contractBalance = await web3.eth.getBalance(oracle.address)
-    const oracleReward = await oracle.getReward()
+    const contractBalance = await web3.eth.getBalance(multiOracle.address)
+    const oracleReward = await multiOracle.getReward()
     oracleReward.should.be.bignumber.equal(reward)
   })
 
   it('getReward should return the contractBalance if the contractBalance is less than the reward', async () => {
-    const oracle2 = await PaidMultiOracle.new(reward, {value: contractBalance2})
-    const contractBalance = await web3.eth.getBalance(oracle2.address)
-    const oracleReward = await oracle2.getReward()
+    const multiOracle2 = await PaidMultiOracle.new(reward, {value: contractBalance2})
+    const contractBalance = await web3.eth.getBalance(multiOracle2.address)
+    const oracleReward = await multiOracle2.getReward()
     oracleReward.should.be.bignumber.equal(contractBalance)
   })
   
   it('requires a non-null dataSource', async () => {
     await expectRevert(
-      oracle.newOracle(0, ZERO_ADDRESS)
+      multiOracle.newOracle(0, ZERO_ADDRESS)
     )
   })
 
@@ -48,28 +48,32 @@ contract('PaidMultiOracle', (accounts) => {
     const dataSourceOriginalBalance = await web3.eth.getBalance(dataSource1)
     dataSourceOriginalBalance.should.be.bignumber.equal(web3.utils.toWei('1000000', 'ether'))
 
-    await oracle.newOracle(0, dataSource1)
-    await oracle.setResult(0, RESULT, {from: dataSource1 })
+    await multiOracle.newOracle(0, dataSource1)
+    await multiOracle.setResult(0, RESULT, {from: dataSource1 })
+    await multiOracle.newOracle(1, dataSource2)
+    await multiOracle.setResult(1, RESULT2, {from: dataSource2})
 
     const dataSourceBalance = await web3.eth.getBalance(dataSource1)
+    const dataSourceBalance2 = await web3.eth.getBalance(dataSource2)
     '1000010'.should.be.bignumber.equal(web3.utils.fromWei(dataSourceBalance, 'ether'), 2, BigNumber.ROUND_UP)
+    '1000010'.should.be.bignumber.equal(web3.utils.fromWei(dataSourceBalance2, 'ether'), 2, BigNumber.ROUND_UP)
   })
 
   it('cannot pay out reward when the result was set twice', async () => {
-    await oracle.newOracle(1, dataSource2)
-    await oracle.setResult(1, RESULT, {from: dataSource2 })
+    await multiOracle.newOracle(1, dataSource2)
+    await multiOracle.setResult(1, RESULT, {from: dataSource2 })
     await expectRevert (
-      oracle.setResult(1, RESULT2, { from: dataSource2 })
+      multiOracle.setResult(1, RESULT2, { from: dataSource2 })
     )
   })
   
   it('isResultSet bool should be flipped after result was set', async () => {
-    await oracle.newOracle(1, dataSource1)
-    let isResultSet = await oracle.isResultSet(1)
+    await multiOracle.newOracle(1, dataSource1)
+    let isResultSet = await multiOracle.isResultSet(1)
     isResultSet.should.equal(false)
 
-    await oracle.setResult(1, RESULT, {from: dataSource1 })
-    isResultSet = await oracle.isResultSet(1)
+    await multiOracle.setResult(1, RESULT, {from: dataSource1 })
+    isResultSet = await multiOracle.isResultSet(1)
     isResultSet.should.equal(true)
   })
 })
