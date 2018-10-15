@@ -7,19 +7,16 @@ import "./Utils/OrderStatisticTree.sol";
 /**
  * @title AveragedOracle
  */
-contract AveragedOracle is OracleBase {
+contract AveragedOracle is OracleBase, OrderStatisticTree {
 
-  OrderStatisticTree private oracles;
-
+  IOracle[] oracles;
   /**
    * @dev AveragedOracle constructor
    * @param _oracles The sub oracles array to initilize the AveragedOracle
    */
   constructor(IOracle[] _oracles) public {
-    for(uint i = 0; i < _oracles.length; i++) {
-      uint value = bytesToUint(_oracles[i].resultFor(0));
-      oracles.insert(value);
-    }
+    require(_oracles.length > 0, "Cannot initilize AveragedOracle with empty oracle array");
+    oracles = _oracles;
   }
 
    /**
@@ -27,10 +24,10 @@ contract AveragedOracle is OracleBase {
    * reverts if any of the sub-oracles have not been set yet.
    */
   function setResult() public {
-    //TODO
-    //require(isAllOraclesSet(), "Some sub-oracles have not been set yet.");
-    bytes memory medianValue = toBytes(oracles.median());
-    _setResult(medianValue); // no id needed here
+    for(uint i = 0; i < oracles.length; i++) {
+      super.insert(bytesToUint(oracles[i].resultFor(0)));
+    }
+    _setResult(toBytes(median())); // no id needed here
   }
 
   /**
@@ -44,6 +41,10 @@ contract AveragedOracle is OracleBase {
     super._resultWasSet(_result);
   }
 
+  /**
+   *  Private functions
+   */
+
   function bytesToUint(bytes b) private pure returns (uint256){
      uint256 number;
      for(uint i=0;i<b.length;i++){
@@ -53,6 +54,8 @@ contract AveragedOracle is OracleBase {
   }
 
   function toBytes(uint256 x) private pure returns (bytes b) {
+      //TODO: This will return bytes32 instead of dynamic length of bytes.
+      //Solidity will store bytes32 more efficiently.
       b = new bytes(32);
       assembly { mstore(add(b, 32), x) }
   }
