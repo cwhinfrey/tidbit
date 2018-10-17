@@ -15,13 +15,15 @@ contract SignedPushOracle is SignedOracle, PushOracleBase {
    * @param _consumer A contract that implements IOracleConsumer and is called when
    * the result has been set.
    */
-  constructor (
+  function initialize(
     address _dataSource,
     IOracleConsumer _consumer
   )
     public
-    SignedOracle(_dataSource)
-    PushOracleBase(_consumer)
-  {}
+    isInitializer("SignedPushOracle", "0.0.0")
+  {
+    SignedOracle.initialize(_dataSource);
+    PushOracleBase.initialize(_consumer, 0);
+  }
 
 }

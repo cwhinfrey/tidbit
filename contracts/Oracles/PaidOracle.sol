@@ -14,15 +14,21 @@ contract PaidOracle is BasicOracle {
 
   uint256 public reward;
 
-  constructor(
+  /**
+   * @dev PaidOracle constructor
+   * @param _dataSource The address that is able to set the result
+   * @param _reward The reward for dataSource setting the result
+   */
+  function initialize(
     address _dataSource,
     uint256 _reward
   )
-    BasicOracle(_dataSource)
     public 
     payable
+    isInitializer("PaidOracle", "0.0.0")
   {
     require(_dataSource != address(0), "Require a non-null dataSource");
+    BasicOracle.initialize(_dataSource);
     reward = _reward;
   }
 

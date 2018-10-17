@@ -15,13 +15,15 @@ contract BasicPushOracle is BasicOracle, PushOracleBase {
    * @param _consumer A contract that implements IOracleConsumer and is called when
    * the result has been set.
    */
-  constructor (
+  function initialize(
     address _dataSource,
     IOracleConsumer _consumer
   )
     public
-    BasicOracle(_dataSource)
-    PushOracleBase(_consumer)
-  {}
+    isInitializer("BasicPushOracle", "0.0.0")
+  {
+    BasicOracle.initialize(_dataSource);
+    PushOracleBase.initialize(_consumer, 0);
+  }
 
 }

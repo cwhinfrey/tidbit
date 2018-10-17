@@ -17,7 +17,8 @@
     "openzeppelin-solidity": "^1.12.0",
     "solc": "^0.4.24",
     "truffle-blockchain-utils": "^0.0.3",
-    "truffle-hdwallet-provider": "^0.0.3"
+    "truffle-hdwallet-provider": "^0.0.3",
+    "zos-lib": "^1.4.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

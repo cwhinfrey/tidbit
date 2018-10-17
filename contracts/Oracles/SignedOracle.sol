@@ -14,12 +14,14 @@ contract SignedOracle is BasicOracle {
    * @dev SignedOracle constructor
    * @param _dataSource The address that is able to set the result
    */
-  constructor(
+  function initialize(
     address _dataSource
   )
-    BasicOracle(_dataSource)
-    public 
-  {}
+    public
+    isInitializer("SignedOracle", "0.0.0")
+  {
+    BasicOracle.initialize(_dataSource);
+  }
 
   /**
    * @dev Sets the result of the oracle with a signed message

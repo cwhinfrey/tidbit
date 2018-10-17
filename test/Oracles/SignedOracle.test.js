@@ -1,6 +1,7 @@
 import expectRevert from '../helpers/expectRevert'
 import expectEvent from '../helpers/expectEvent'
 import { web3 } from '../helpers/w3'
+import { encodeCall } from 'zos-lib'
 
 const SignedOracle = artifacts.require('SignedOracle')
 
@@ -14,7 +15,13 @@ contract('SignedOracle', (accounts) => {
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await SignedOracle.new(dataSource)
+    oracle = await SignedOracle.new()
+    const data = encodeCall(
+        "initialize", 
+        ['address'],
+        [dataSource]
+    )
+    await oracle.sendTransaction({data})
   })
 
   it('can set result by data source', async () => {

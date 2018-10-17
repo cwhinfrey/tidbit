@@ -1,6 +1,7 @@
 import { toAscii, fromAscii } from 'web3-utils'
 import expectRevert from '../helpers/expectRevert'
 import expectEvent from '../helpers/expectEvent'
+import { encodeCall } from 'zos-lib'
 
 const BasicOracle = artifacts.require('BasicOracle')
 
@@ -13,7 +14,13 @@ contract('BasicOracle', (accounts) => {
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await BasicOracle.new(dataSource)
+    oracle = await BasicOracle.new()
+    const data = encodeCall(
+        "initialize", 
+        ['address'],
+        [dataSource]
+    )
+    await oracle.sendTransaction({data})
   })
 
   it('can set result by owner', async () => {

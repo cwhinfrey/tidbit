@@ -1,0 +1,9 @@
+{
+  "name": "tidbit-contracts-zos",
+  "version": "0.1.0",
+  "contracts": {
+    "BasicOracle": "BasicOracle",
+    "PaidOracle": "PaidOracle"
+  },
+  "lib": true
+}

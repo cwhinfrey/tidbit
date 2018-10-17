@@ -8,3 +8,5 @@ coverage.json
 allFiredEvents
 scTopics
 coverageEnv
+
+.zos.session
