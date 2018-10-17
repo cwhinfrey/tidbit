@@ -5,20 +5,20 @@ import "./OracleBase.sol";
 import "../Utils/OrderStatisticTree.sol";
 
 /**
- * @title AveragedOracle
+ * @title MedianOracle
  * @dev Takes the result of a set of sub-oracles,
  * converts the results to uints, and sets the result to the median value.
  */
-contract AveragedOracle is OracleBase, OrderStatisticTree {
+contract MedianOracle is OracleBase, OrderStatisticTree {
 
   IOracle[] oracles;
 
   /**
-   * @dev AveragedOracle constructor
-   * @param _oracles The sub oracles array to initilize the AveragedOracle
+   * @dev MedianOracle constructor
+   * @param _oracles The sub oracles array to initialize the MedianOracle
    */
   constructor(IOracle[] _oracles) public {
-    require(_oracles.length > 0, "Cannot initilize AveragedOracle with empty oracle array");
+    require(_oracles.length > 0, "Cannot initialize MedianOracle with empty oracle array");
     oracles = _oracles;
   }
 
