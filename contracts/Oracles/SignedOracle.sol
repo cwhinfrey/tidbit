@@ -17,8 +17,8 @@ contract SignedOracle is BasicOracle {
   function initialize(
     address _dataSource
   )
-    public
     isInitializer("SignedOracle", "0.0.0")
+    public
   {
     BasicOracle.initialize(_dataSource);
   }

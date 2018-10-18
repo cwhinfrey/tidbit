@@ -23,9 +23,9 @@ contract PaidOracle is BasicOracle {
     address _dataSource,
     uint256 _reward
   )
+    isInitializer("PaidOracle", "0.0.0")
     public 
     payable
-    isInitializer("PaidOracle", "0.0.0")
   {
     require(_dataSource != address(0), "Require a non-null dataSource");
     BasicOracle.initialize(_dataSource);

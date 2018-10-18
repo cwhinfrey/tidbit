@@ -16,7 +16,7 @@ contract BasicOracle is Migratable, OracleBase {
    *  @dev BasicOracle constructor
    *  @param _dataSource The address that is able to set the result
    */
-  function initialize(address _dataSource) public isInitializer("BasicOracle", "0.0.0") {
+  function initialize(address _dataSource) isInitializer("BasicOracle", "0.0.0") public {
     dataSource = _dataSource;
   }
 

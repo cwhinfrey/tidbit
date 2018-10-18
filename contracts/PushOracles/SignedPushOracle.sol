@@ -19,8 +19,8 @@ contract SignedPushOracle is SignedOracle, PushOracleBase {
     address _dataSource,
     IOracleConsumer _consumer
   )
-    public
     isInitializer("SignedPushOracle", "0.0.0")
+    public
   {
     SignedOracle.initialize(_dataSource);
     PushOracleBase.initialize(_consumer, 0);

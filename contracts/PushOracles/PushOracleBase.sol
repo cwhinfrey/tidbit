@@ -18,7 +18,7 @@ contract PushOracleBase is Migratable, OracleBase {
    * @param _consumer A contract that implements IOracleConsumer and is called when
    * the result has been set.
    */
-  function initialize(IOracleConsumer _consumer, uint unusedParam) public isInitializer("PushOracleBase", "0.0.0") {
+  function initialize(IOracleConsumer _consumer, uint unusedParam) isInitializer("PushOracleBase", "0.0.0") public {
     consumer = _consumer;
   }
 

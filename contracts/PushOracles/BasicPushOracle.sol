@@ -19,8 +19,8 @@ contract BasicPushOracle is BasicOracle, PushOracleBase {
     address _dataSource,
     IOracleConsumer _consumer
   )
-    public
     isInitializer("BasicPushOracle", "0.0.0")
+    public
   {
     BasicOracle.initialize(_dataSource);
     PushOracleBase.initialize(_consumer, 0);
