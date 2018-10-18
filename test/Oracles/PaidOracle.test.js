@@ -19,6 +19,7 @@ contract('PaidOracle', (accounts) => {
   const contractBalance = web3.utils.toWei('100', 'ether')
 
   let oracle
+  let oracle2
   beforeEach(async ()=> {
     oracle = await PaidOracle.new()
     const data = encodeCall(
@@ -29,18 +30,17 @@ contract('PaidOracle', (accounts) => {
     await oracle.sendTransaction({data, value: contractBalance})
   })
 
-  // it('requires a non-null dataSource', async () => {
-  //   await expectRevert(
-  //     TODO fix this test
-  //     oracle2 = await PaidOracle.new()
-  //     const data = encodeCall(
-  //         "initialize", 
-  //         ['address', 'uint256'],
-  //         [ZERO_ADDRESS, reward]
-  //     )
-  //     await oracle2.sendTransaction({data, value: contractBalance})
-  //   )
-  // })
+  it('requires a non-null dataSource', async () => {
+    oracle2 = await PaidOracle.new()
+    const data = encodeCall(
+        "initialize", 
+        ['address', 'uint256'],
+        [ZERO_ADDRESS, reward]
+    )
+    await expectRevert(
+      oracle2.sendTransaction({data, value: contractBalance})
+    )
+  })
 
   it('reward should be the contract balance if its less than the reward, otherwise return reward itself.', async () => {
     const contractBalance = await web3.eth.getBalance(oracle.address)
