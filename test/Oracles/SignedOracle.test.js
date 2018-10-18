@@ -16,12 +16,12 @@ contract('SignedOracle', (accounts) => {
   let oracle
   beforeEach(async ()=> {
     oracle = await SignedOracle.new()
-    const data = encodeCall(
+    const callData = encodeCall(
         "initialize", 
         ['address'],
         [dataSource]
     )
-    await oracle.sendTransaction({data})
+    await oracle.sendTransaction({data: callData})
   })
 
   it('can set result by data source', async () => {

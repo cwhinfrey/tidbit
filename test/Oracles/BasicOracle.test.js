@@ -15,12 +15,12 @@ contract('BasicOracle', (accounts) => {
   let oracle
   beforeEach(async ()=> {
     oracle = await BasicOracle.new()
-    const data = encodeCall(
+    const callData = encodeCall(
         "initialize", 
         ['address'],
         [dataSource]
     )
-    await oracle.sendTransaction({data})
+    await oracle.sendTransaction({data: callData})
   })
 
   it('can set result by owner', async () => {

@@ -9,12 +9,12 @@ contract('PushOracleBase', (accounts) => {
 
   it('is initialized with the correct state', async () => {
     const oracle = await PushOracleBase.new()
-    const data = encodeCall(
+    const callData = encodeCall(
         "initialize", 
         ['address', 'uint'],//TODO, should this be 'address' or 'IOracleConsumer'?
         [consumer, 0]
     )
-    await oracle.sendTransaction({data})
+    await oracle.sendTransaction({data: callData})
     const consumerOnChain = await oracle.consumer()
     consumer.should.equal(consumerOnChain)
   })
