@@ -1,5 +1,6 @@
 import { web3 } from '../helpers/w3'
 import expectRevert from '../helpers/expectRevert'
+import { encodeCall } from 'zos-lib'
 
 const MedianOracle = artifacts.require('MedianOracle')
 const BasicOracle = artifacts.require('BasicOracle')
@@ -18,9 +19,29 @@ contract('MedianOracle', (accounts) => {
   let oracle1, oracle2, oracle3, oracle4
 
   beforeEach(async () => {
-    oracle1 = await BasicOracle.new(dataSource1)
-    oracle2 = await BasicOracle.new(dataSource2)
-    oracle3 = await BasicOracle.new(dataSource3)
+    oracle1 = await BasicOracle.new()
+    const callData1 = encodeCall(
+        "initialize", 
+        ['address'],
+        [dataSource1]
+    )
+    await oracle1.sendTransaction({data: callData1})
+
+    oracle2 = await BasicOracle.new()
+    const callData2 = encodeCall(
+        "initialize",
+        ['address'],
+        [dataSource2]
+    )
+    await oracle2.sendTransaction({data: callData2})
+
+    oracle3 = await BasicOracle.new()
+    const callData3 = encodeCall(
+        "initialize", 
+        ['address'],
+        [dataSource3]
+    )
+    await oracle3.sendTransaction({data: callData3})
   })
 
   it('cannot initilize MedianOracle with empty oracle array.', async () => {
@@ -45,7 +66,13 @@ contract('MedianOracle', (accounts) => {
   })
 
   it('set result to the median value even with duplicated value in sub-oracles', async () => {
-    oracle4 = await BasicOracle.new(dataSource4)
+    oracle4 = await BasicOracle.new()
+    const callData4 = encodeCall(
+        "initialize",
+        ['address'],
+        [dataSource4]
+    )
+    await oracle4.sendTransaction({data: callData4})
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await oracle3.setResult(RESULT3, { from: dataSource3 })
