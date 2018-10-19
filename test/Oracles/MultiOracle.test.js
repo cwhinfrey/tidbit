@@ -22,6 +22,7 @@ contract('MultiOracle', (accounts) => {
   let oracle
   beforeEach(async ()=> {
     oracle = await MultiOracle.new()
+    oracle.initialize()
   })
 
   it('requires a non-null dataSource', async () => {

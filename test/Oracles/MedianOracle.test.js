@@ -16,7 +16,9 @@ contract('MedianOracle', (accounts) => {
   const dataSource2 = accounts[2]
   const dataSource3 = accounts[3]
   const dataSource4 = accounts[4]
+  const dataSource5 = []
   let oracle1, oracle2, oracle3, oracle4
+  let medianOracle1
 
   beforeEach(async () => {
     oracle1 = await BasicOracle.new()
@@ -44,12 +46,25 @@ contract('MedianOracle', (accounts) => {
     await oracle3.sendTransaction({data: callData3})
   })
 
-  it('cannot initilize MedianOracle with empty oracle array.', async () => {
-    await expectRevert(MedianOracle.new([]))
+  it('cannot initialize MedianOracle with empty oracle array.', 
+    async () => {
+    medianOracle1 = await MedianOracle.new()
+    const callData = encodeCall(
+        "initialize",
+        ['address[]'],
+        [dataSource5]
+    )
+    await expectRevert(medianOracle1.sendTransaction({data: callData}))
   })
 
   it('cannot set result if any of the sub-oracles have not been set yet.', async () => {
-    const medianOracle = await MedianOracle.new([oracle1.address, oracle2.address, oracle3.address])
+    const medianOracle = await MedianOracle.new()
+    const callData = encodeCall(
+        "initialize",
+        ['address[]'],
+        [[oracle1.address, oracle2.address, oracle3.address]]
+    )
+    await medianOracle.sendTransaction({data: callData})
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await expectRevert(medianOracle.setResult())
@@ -59,7 +74,13 @@ contract('MedianOracle', (accounts) => {
     await oracle1.setResult(RESULT1, { from: dataSource1 })
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await oracle3.setResult(RESULT3, { from: dataSource3 })
-    const medianOracle = await MedianOracle.new([oracle1.address, oracle2.address, oracle3.address]);
+    const medianOracle = await MedianOracle.new();
+    const callData = encodeCall(
+        "initialize",
+        ['address[]'],
+        [[oracle1.address, oracle2.address, oracle3.address]]
+    )
+    await medianOracle.sendTransaction({data: callData})
     await medianOracle.setResult()
     const medianValue = await medianOracle.resultFor(0)
     web3.utils.hexToUtf8(medianValue).should.equal('10')
@@ -77,7 +98,13 @@ contract('MedianOracle', (accounts) => {
     await oracle2.setResult(RESULT2, { from: dataSource2 })
     await oracle3.setResult(RESULT3, { from: dataSource3 })
     await oracle4.setResult(RESULT2, { from: dataSource4 })
-    const medianOracle = await MedianOracle.new([oracle1.address, oracle2.address, oracle3.address, oracle4.address]);
+    const medianOracle = await MedianOracle.new();
+    const callData = encodeCall(
+        "initialize",
+        ['address[]'],
+        [[oracle1.address, oracle2.address, oracle3.address, oracle4.address]]
+    )
+    await medianOracle.sendTransaction({data: callData})
     await medianOracle.setResult()
     const medianValue = await medianOracle.resultFor(0)
     web3.utils.hexToUtf8(medianValue).should.equal('10')

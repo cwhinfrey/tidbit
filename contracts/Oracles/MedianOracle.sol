@@ -3,13 +3,14 @@ pragma solidity ^0.4.24;
 import "./IOracle.sol";
 import "./OracleBase.sol";
 import "../Utils/OrderStatisticTree.sol";
+import "zos-lib/contracts/migrations/Migratable.sol";
 
 /**
  * @title MedianOracle
  * @dev Takes the result of a set of sub-oracles,
  * converts the results to uints, and sets the result to the median value.
  */
-contract MedianOracle is OracleBase, OrderStatisticTree {
+contract MedianOracle is Migratable, OracleBase, OrderStatisticTree {
 
   IOracle[] oracles;
 
@@ -17,7 +18,7 @@ contract MedianOracle is OracleBase, OrderStatisticTree {
    * @dev MedianOracle constructor
    * @param _oracles The sub oracles array to initialize the MedianOracle
    */
-  constructor(IOracle[] _oracles) public {
+  function initialize(IOracle[] _oracles) isInitializer("MedianOracle", "0.0.0") public {
     require(_oracles.length > 0, "Cannot initialize MedianOracle with empty oracle array");
     oracles = _oracles;
   }

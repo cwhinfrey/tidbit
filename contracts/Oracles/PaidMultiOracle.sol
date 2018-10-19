@@ -12,9 +12,8 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 contract PaidMultiOracle is MultiOracle {
 
   uint256 public reward;
-
-  constructor(uint256 _reward) public payable
-  {
+  
+  function initialize(uint256 _reward) isInitializer("PaidMultiOracle", "0.0.0") public payable {
     reward = _reward;
   }
 
