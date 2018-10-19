@@ -10,3 +10,4 @@ scTopics
 coverageEnv
 
 .zos.session
+zos.development.json
