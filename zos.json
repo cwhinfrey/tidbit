@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "contracts": {
     "BasicOracle": "BasicOracle",
-    "PaidOracle": "PaidOracle"
+    "BasicPushOracle": "BasicPushOracle",
+    "MedianOracle": "MedianOracle",
+    "MultiOracle": "MultiOracle",
+    "PaidMultiOracle": "PaidMultiOracle",
+    "PaidOracle": "PaidOracle",
+    "SignedMultiOracle": "SignedMultiOracle",
+    "SignedOracle": "SignedOracle",
+    "SignedPushOracle": "SignedPushOracle"
   },
   "lib": true
 }
