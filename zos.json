@@ -1,5 +1,5 @@
 {
-  "name": "tidbit-contracts-zos",
+  "name": "tidbit-eth",
   "version": "0.1.0",
   "contracts": {
     "BasicOracle": "BasicOracle",
