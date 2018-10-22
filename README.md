@@ -1,4 +1,4 @@
-# Tidbit
+# Tidbit EVM Package
 
 A library for oracles on Ethereum.
 
@@ -6,7 +6,7 @@ A library for oracles on Ethereum.
 
 For more information on each contract checkout the  [documentation](https://levelkdev.github.io/tidbit/docs/Oracles_OracleBase.html).
 
-##### Inheritance Tree
+##### Partial Inheritance Tree
 
 ```
 IOracle
@@ -16,28 +16,25 @@ OracleBase --------> BasicOracle ------> SignedOracle
    |                      |                   |
    v                      v                   v
 PushOracleBase --> BasicPushOracle --> SignedPushOracle
-```
-
-### Setup
-
-Then run `npm install`
-
-`chmod +x ./scripts/**` to grant execute permissions on the scripts directory
-
-### Compile
-
-Recompile contracts and build artifacts.
 
 ```
-$ npm run compile
-```
 
-### Test
-
-Run `npm run compile` before first test run, and after any changes to the `.sol` files
+### Install
 
 ```
-$ npm test
+npm install tidbit-eth
 ```
 
-Run `npm run test:coverage` to run with coverage reporting
+### Pre-deployed contracts
+
+```
+- BasicOracle
+- BasicPushOracle
+- MedianOracle
+- MultiOracle
+- PaidMultiOracle
+- PaidOracle
+- SignedMultiOracle
+- SignedOracle
+- SignedPushOracle
+```
