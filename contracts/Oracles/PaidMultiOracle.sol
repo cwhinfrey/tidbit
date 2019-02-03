@@ -3,18 +3,18 @@ pragma solidity ^0.4.24;
 import "./MultiOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title PaidMultiOracle
  * @dev Extends MultiOracle to include rewards for dataSources
  */
 
-contract PaidMultiOracle is MultiOracle {
+contract PaidMultiOracle is Initializable, MultiOracle {
 
   uint256 public reward;
 
-  constructor(uint256 _reward) public payable
-  {
+  function initialize(uint256 _reward) public payable initializer {
     reward = _reward;
   }
 

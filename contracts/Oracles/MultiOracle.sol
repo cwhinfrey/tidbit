@@ -15,8 +15,6 @@ contract MultiOracle is IOracle, Ownable {
 
   event ResultSet(bytes32 _id, bytes _result, address _sender);
 
-  constructor() public {}
-
   /**
    * @dev Throws if operator is not dataSource.
    * @param _operator address

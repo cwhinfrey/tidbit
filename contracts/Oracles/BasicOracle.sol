@@ -1,21 +1,23 @@
 pragma solidity ^0.4.24;
 
 import "./OracleBase.sol";
+import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title BasicOracle
  * @dev Extends OracleBase to allow the result to be set by a single data source
  */
-contract BasicOracle is OracleBase {
+contract BasicOracle is Initializable, OracleBase {
 
   // The address that is able to set the result
   address public dataSource;
 
   /**
-   *  @dev BasicOracle constructor
+   *  @dev BasicOracle initializer
    *  @param _dataSource The address that is able to set the result
    */
-  constructor(address _dataSource) public {
+  function initialize(address _dataSource) public initializer {
+    require(_dataSource != address(0), "Require a non-null dataSource");
     dataSource = _dataSource;
   }
 

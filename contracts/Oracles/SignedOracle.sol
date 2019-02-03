@@ -2,24 +2,27 @@ pragma solidity ^0.4.24;
 
 import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title SignedOracle
  * @dev Extends BasicOracle to allow any address to resolve the oracle with a
  * signed message from the data source
  */
-contract SignedOracle is BasicOracle {
+contract SignedOracle is Initializable, BasicOracle {
 
   /**
-   * @dev SignedOracle constructor
+   * @dev SignedOracle initializer
    * @param _dataSource The address that is able to set the result
    */
-  constructor(
+  function initialize(
     address _dataSource
   )
-    BasicOracle(_dataSource)
-    public 
-  {}
+    public
+    initializer
+  {
+    BasicOracle.initialize(_dataSource);
+  }
 
   /**
    * @dev Sets the result of the oracle with a signed message
