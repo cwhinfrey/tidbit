@@ -13,7 +13,8 @@ contract('BasicOracle', (accounts) => {
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await BasicOracle.new(dataSource)
+    oracle = await BasicOracle.new()
+    await oracle.initialize(dataSource)
   })
 
   it('can set result by owner', async () => {
