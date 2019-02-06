@@ -42,7 +42,7 @@ contract PaidOracle is Initializable, BasicOracle {
   /*
    *  Internal functions
    */
-  function _resultWasSet(bytes /*_result*/)
+  function _resultWasSet(bytes32 /*_result*/)
     internal
   {
     require(resultIsSet, "Result hasn't been set yet.");

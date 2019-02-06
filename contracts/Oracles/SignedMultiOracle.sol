@@ -18,7 +18,7 @@ contract SignedMultiOracle is MultiOracle {
    */
    function setResultWithSignature(
      bytes32 _id,
-     bytes _result,
+     bytes32 _result,
      bytes _signature
    )
      public

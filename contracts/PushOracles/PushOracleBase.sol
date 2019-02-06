@@ -29,10 +29,10 @@ contract PushOracleBase is Initializable, OracleBase {
   /**
    * @dev Calls receiveResult(bytes32, bytes) on the oracle consumer when the 
    * result is set
-   * @dev Called by _setResult(bytes) in OracleBase
-   * @param _result The result being set in _setResult(bytes)
+   * @dev Called by _setResult(bytes32) in OracleBase
+   * @param _result The result being set in _setResult(bytes32)
    */
-  function _resultWasSet(bytes _result) internal {
+  function _resultWasSet(bytes32 _result) internal {
     super._resultWasSet(_result);
     consumer.receiveResult(0, _result);
   }

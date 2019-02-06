@@ -29,7 +29,7 @@ contract PaidMultiOracle is Initializable, MultiOracle {
    *  Internal functions
    */
 
-  function _resultWasSet(bytes32 _id, bytes /*_result*/)
+  function _resultWasSet(bytes32 _id, bytes32 /*_result*/)
     internal
   {
     require(results[_id].resultIsSet, "Result hasn't been set yet.");

@@ -29,7 +29,7 @@ contract SignedOracle is Initializable, BasicOracle {
    * @param _result The result being set
    * @param _signature The hash of the result signed by the data source
    */
-  function setResult(bytes _result, bytes _signature) public {
+  function setResult(bytes32 _result, bytes _signature) public {
     // Generate message hash
     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
     bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _result));
