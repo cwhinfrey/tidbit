@@ -14,7 +14,8 @@ contract('SignedOracle', (accounts) => {
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await SignedOracle.new(dataSource)
+    oracle = await SignedOracle.new()
+    await oracle.initialize(dataSource)
   })
 
   it('can set result by data source', async () => {

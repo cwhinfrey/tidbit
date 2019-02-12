@@ -22,7 +22,8 @@ contract('PaidMultiOracle', (accounts) => {
 
   let multiOracle
   beforeEach(async ()=> {
-    multiOracle = await PaidMultiOracle.new(reward, {value: contractBalance})
+    multiOracle = await PaidMultiOracle.new()
+    await multiOracle.initialize(reward, {value: contractBalance})
   })
 
   it('getReward should return the reward if the contractBalance is greater than the reward', async () => {
@@ -32,7 +33,8 @@ contract('PaidMultiOracle', (accounts) => {
   })
 
   it('getReward should return the contractBalance if the contractBalance is less than the reward', async () => {
-    const multiOracle2 = await PaidMultiOracle.new(reward, {value: contractBalance2})
+    const multiOracle2 = await PaidMultiOracle.new()
+    await multiOracle2.initialize(reward, {value: contractBalance2})
     const contractBalance = await web3.eth.getBalance(multiOracle2.address)
     const oracleReward = await multiOracle2.getReward()
     oracleReward.should.be.bignumber.equal(contractBalance)

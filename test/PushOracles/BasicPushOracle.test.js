@@ -12,7 +12,8 @@ contract('BasicPushOracle', (accounts) => {
 
   it('calls receiveResult() on OracleConsumer', async () => {
     const oracleConsumer = await OracleConsumerMock.new()
-    const oracle = await BasicPushOracle.new(dataSource, oracleConsumer.address)
+    const oracle = await BasicPushOracle.new()
+    await oracle.initialize(dataSource, oracleConsumer.address)
     await oracle.setResult(RESULT, { from: dataSource })
     const result = await oracleConsumer.result()
     toAscii(result).replace(/\u0000/g, '').should.equal(RESULT)

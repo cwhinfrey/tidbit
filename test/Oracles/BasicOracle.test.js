@@ -1,4 +1,4 @@
-import { toAscii, fromAscii } from 'web3-utils'
+import { toAscii, fromAscii, padRight } from 'web3-utils'
 import expectRevert from '../helpers/expectRevert'
 import expectEvent from '../helpers/expectEvent'
 
@@ -13,7 +13,8 @@ contract('BasicOracle', (accounts) => {
 
   let oracle
   beforeEach(async ()=> {
-    oracle = await BasicOracle.new(dataSource)
+    oracle = await BasicOracle.new()
+    await oracle.initialize(dataSource)
   })
 
   it('can set result by owner', async () => {
@@ -39,7 +40,7 @@ contract('BasicOracle', (accounts) => {
   })
 
   it('should emit ResultSet event', async () => {
-    const bytes32Result = fromAscii(RESULT)
+    const bytes32Result = padRight(fromAscii(RESULT), 64)
     await expectEvent.inTransaction(
       oracle.setResult(RESULT, { from: dataSource }),
       'ResultSet',

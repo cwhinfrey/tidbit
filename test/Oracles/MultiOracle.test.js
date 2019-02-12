@@ -1,4 +1,4 @@
-import { toAscii, fromAscii } from 'web3-utils'
+import { toAscii, fromAscii, padRight } from 'web3-utils'
 import expectRevert from '../helpers/expectRevert'
 import expectEvent from '../helpers/expectEvent'
 import { web3 } from '../helpers/w3'
@@ -68,7 +68,7 @@ contract('MultiOracle', (accounts) => {
   })
 
   it('should emit ResultSet event', async () => {
-    const bytes32Result = fromAscii(RESULT)
+    const bytes32Result = padRight(fromAscii(RESULT), 64)
     await oracle.newOracle(2, dataSource2)
     await expectEvent.inTransaction(
       oracle.setResult(2, RESULT, { from: dataSource2 }),

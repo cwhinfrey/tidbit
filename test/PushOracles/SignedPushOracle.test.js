@@ -14,7 +14,8 @@ contract('SignedPushOracle', (accounts) => {
   it('calls receiveResult() on OracleConsumer', async () => {
     // Deploy contracts
     const oracleConsumer = await OracleConsumerMock.new()
-    const oracle = await SignedPushOracle.new(signer, oracleConsumer.address)
+    const oracle = await SignedPushOracle.new()
+    await oracle.initialize(signer, oracleConsumer.address)
 
     // Sign and set result hash
     let signature = await web3.eth.sign(RESULT_HASH, signer)

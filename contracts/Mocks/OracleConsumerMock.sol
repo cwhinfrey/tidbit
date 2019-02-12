@@ -4,9 +4,9 @@ import "../PushOracles/IOracleConsumer.sol";
 
 contract OracleConsumerMock is IOracleConsumer {
 
-  bytes public result;
+  bytes32 public result;
 
-  function receiveResult(bytes32 /*id*/, bytes _result) external {
+  function receiveResult(bytes32 /*id*/, bytes32 _result) external {
     result = _result;
   }
 }

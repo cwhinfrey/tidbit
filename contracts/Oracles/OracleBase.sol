@@ -11,10 +11,10 @@ import "./IOracle.sol";
  
 contract OracleBase is IOracle {
 
-  bytes result;
+  bytes32 result;
   bool resultIsSet;
 
-  event ResultSet(bytes _result, address _sender);
+  event ResultSet(bytes32 _result, address _sender);
 
   /**
    *  Public functions
@@ -25,7 +25,7 @@ contract OracleBase is IOracle {
    * @param id This is not used in single-event oracles and should be 0
    * @return The result or the oracle's single event
    */
-  function resultFor(bytes32 id) external view returns (bytes) {
+  function resultFor(bytes32 id) external view returns (bytes32) {
     require(id == bytes32(0), "This oracle does not support ids.");
     require(isResultSet(id), "The result has not been set.");
     return result;
@@ -48,7 +48,7 @@ contract OracleBase is IOracle {
     * overridable function
     * @param _result The result of the oracle's single event.
     */
-  function _setResult(bytes _result) internal {
+  function _setResult(bytes32 _result) internal {
     require(!resultIsSet, "Result has already been set.");
     result = _result;
     resultIsSet = true;
@@ -59,7 +59,7 @@ contract OracleBase is IOracle {
   /**
    * @dev Empty function meant to be overidden in subclasses
    */
-  function _resultWasSet(bytes /*_result*/) internal {
+  function _resultWasSet(bytes32 /*_result*/) internal {
     // optional override
   }
 

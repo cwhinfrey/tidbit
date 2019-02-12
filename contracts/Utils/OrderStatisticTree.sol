@@ -41,7 +41,7 @@ contract OrderStatisticTree {
             n.height=height_right+1;
     }
 
-    function balance_factor(uint value) constant private returns (int bf) {
+    function balance_factor(uint value) view private returns (int bf) {
         Node storage n=nodes[value];
         return int(nodes[n.children[false]].height)-int(nodes[n.children[true]].height);
     }
@@ -162,7 +162,7 @@ contract OrderStatisticTree {
         }
     }
 
-    function rightmost_leaf(uint value) constant private returns (uint leaf) {
+    function rightmost_leaf(uint value) view private returns (uint leaf) {
         uint child=nodes[value].children[true];
         if (child!=0)
             return rightmost_leaf(child);
@@ -258,7 +258,7 @@ contract OrderStatisticTree {
             remove_helper(value);
     }
 
-    function rank(uint value) public constant returns (uint smaller){
+    function rank(uint value) public view returns (uint smaller){
         if(value!=0){
             smaller=nodes[0].dupes;
             uint cur=nodes[0].children[true];
@@ -278,7 +278,7 @@ contract OrderStatisticTree {
         }
     }
 
-    function select_at(uint pos) public constant returns (uint value){
+    function select_at(uint pos) public view returns (uint value){
         uint zeroes=nodes[0].dupes;
         if (pos<zeroes)
             return 0;
@@ -312,75 +312,75 @@ contract OrderStatisticTree {
         }
     }
 
-    function duplicates(uint value) public constant returns (uint n){
+    function duplicates(uint value) public view returns (uint n){
         return nodes[value].dupes+1;
     }
     
-    function count() public constant returns (uint result){
+    function count() public view returns (uint result){
         Node storage root=nodes[0];
         Node storage child=nodes[root.children[true]];
         return root.dupes+child.count;
     }
 
-    function in_top_n(uint value,uint n) public constant returns (bool truth){
+    function in_top_n(uint value,uint n) public view returns (bool truth){
         uint pos=rank(value);
         uint num=count();
         return (num-pos-1<n);
     }
 
-    function percentile(uint value) public constant returns (uint k){
+    function percentile(uint value) public view returns (uint k){
         uint pos=rank(value);
         uint same=nodes[value].dupes;
         uint num=count();
         return (pos*100+(same*100+100)/2)/num;
     }
 
-    function at_percentile(uint perc) public constant returns (uint value){
+    function at_percentile(uint perc) public view returns (uint value){
         uint n=count();
         return select_at(perc*n/100);
     }
 
-    function permille(uint value) public constant returns (uint k){
+    function permille(uint value) public view returns (uint k){
         uint pos=rank(value);
         uint same=nodes[value].dupes;
         uint num=count();
         return (pos*1000+(same*1000+1000)/2)/num;
     }
 
-    function at_permille(uint perm) public constant returns (uint value){
+    function at_permille(uint perm) public view returns (uint value){
         uint n=count();
         return select_at(perm*n/1000);
     }
 
-    function median() public constant returns (uint value){
+    function median() public view returns (uint value){
         return at_percentile(50);
     }
 
-    function node_left_child(uint value) public constant returns (uint child){
+    function node_left_child(uint value) public view returns (uint child){
         child=nodes[value].children[false];
     }
 
-    function node_right_child(uint value) public constant returns (uint child){
+    function node_right_child(uint value) public view returns (uint child){
         child=nodes[value].children[true];
     }
 
-    function node_parent(uint value) public constant returns (uint parent){
+    function node_parent(uint value) public view returns (uint parent){
         parent=nodes[value].parent;
     }
 
-    function node_side(uint value) public constant returns (bool side){
+    function node_side(uint value) public view returns (bool side){
         side=nodes[value].side;
     }
 
-    function node_height(uint value) public constant returns (uint height){
+    function node_height(uint value) public view returns (uint height){
         height=nodes[value].height;
     }
 
-    function node_count(uint value) public constant returns (uint result){
+    function node_count(uint value) public view returns (uint result){
         result=nodes[value].count;
     }
 
-    function node_dupes(uint value) public constant returns (uint dupes){
+    function node_dupes(uint value) public view returns (uint dupes){
         dupes=nodes[value].dupes;
     }
 

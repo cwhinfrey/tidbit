@@ -7,15 +7,13 @@ contract MultiOracle is IOracle, Ownable {
 
   struct OracleData {
     address dataSource;
-    bytes result;
+    bytes32 result;
     bool resultIsSet;
   }
 
   mapping (bytes32 => OracleData) results; // id to result map
 
-  event ResultSet(bytes32 _id, bytes _result, address _sender);
-
-  constructor() public {}
+  event ResultSet(bytes32 _id, bytes32 _result, address _sender);
 
   /**
    * @dev Throws if operator is not dataSource.
@@ -38,7 +36,7 @@ contract MultiOracle is IOracle, Ownable {
   */
   function setResult(
     bytes32 id,
-    bytes result
+    bytes32 result
   )
     public
   {
@@ -55,7 +53,7 @@ contract MultiOracle is IOracle, Ownable {
     external
     view
     returns
-    (bytes)
+    (bytes32)
   {
     require(isResultSet(id), "The result has not been set.");
     return results[id].result;
@@ -117,7 +115,7 @@ contract MultiOracle is IOracle, Ownable {
    */
   function _setResult(
     bytes32 _id, 
-    bytes _result
+    bytes32 _result
   )
     internal
   {
@@ -131,7 +129,7 @@ contract MultiOracle is IOracle, Ownable {
   /**
    * @dev Empty function meant to be overidden in subclasses
    */
-  function _resultWasSet(bytes32 /*_id*/, bytes /*_result*/)
+  function _resultWasSet(bytes32 /*_id*/, bytes32 /*_result*/)
     internal
   {
     // optional override

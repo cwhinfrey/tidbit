@@ -3,26 +3,27 @@ pragma solidity ^0.4.24;
 import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title PaidOracle
- * @dev BasicOracle with reward set in constructor. The reward is transfered to 
+ * @dev BasicOracle with reward set in initializer. The reward is transfered to 
  * dataSource when the result is successfully set.
  */
 
-contract PaidOracle is BasicOracle {
+contract PaidOracle is Initializable, BasicOracle {
 
   uint256 public reward;
 
-  constructor(
+  function initialize(
     address _dataSource,
     uint256 _reward
   )
-    BasicOracle(_dataSource)
-    public 
+    public
     payable
+    initializer
   {
-    require(_dataSource != address(0), "Require a non-null dataSource");
+    BasicOracle.initialize(_dataSource);
     reward = _reward;
   }
 
@@ -41,7 +42,7 @@ contract PaidOracle is BasicOracle {
   /*
    *  Internal functions
    */
-  function _resultWasSet(bytes /*_result*/)
+  function _resultWasSet(bytes32 /*_result*/)
     internal
   {
     require(resultIsSet, "Result hasn't been set yet.");

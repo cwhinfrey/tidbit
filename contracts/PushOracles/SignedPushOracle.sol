@@ -2,26 +2,29 @@ pragma solidity ^0.4.24;
 
 import "./PushOracleBase.sol";
 import "../Oracles/SignedOracle.sol";
+import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title SignedPushOracle
  * @dev Combines SignedOracle and PushOracleBase to create a push style SignedOracle
  */
-contract SignedPushOracle is SignedOracle, PushOracleBase {
+contract SignedPushOracle is Initializable, SignedOracle, PushOracleBase {
 
   /**
-   * @dev SignedPushOracle constructor
+   * @dev SignedPushOracle initializer
    * @param _dataSource The address that is able to set the result
    * @param _consumer A contract that implements IOracleConsumer and is called when
    * the result has been set.
    */
-  constructor (
+  function initialize(
     address _dataSource,
     IOracleConsumer _consumer
   )
     public
-    SignedOracle(_dataSource)
-    PushOracleBase(_consumer)
-  {}
+    initializer
+  {
+    SignedOracle.initialize(_dataSource);
+    PushOracleBase.initialize(_consumer, 0);
+  }
 
 }

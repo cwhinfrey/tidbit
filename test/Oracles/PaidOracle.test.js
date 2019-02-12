@@ -1,6 +1,7 @@
 import expectRevert from '../helpers/expectRevert'
 import expectEvent from '../helpers/expectEvent'
 import { web3 } from '../helpers/w3'
+import { encodeCall } from 'zos-lib'
 
 const PaidOracle = artifacts.require('PaidOracle')
 const BigNumber = require('bignumber.js');
@@ -17,14 +18,19 @@ contract('PaidOracle', (accounts) => {
   const reward = web3.utils.toWei('10', 'ether')
   const contractBalance = web3.utils.toWei('100', 'ether')
 
-  let oracle
+  let oracle, initializeData
   beforeEach(async ()=> {
-    oracle = await PaidOracle.new(dataSource, reward, {value: contractBalance})
+    oracle = await PaidOracle.new()
+    initializeData = encodeCall("initialize", ['address', 'uint256'], [dataSource, reward])
+    await oracle.sendTransaction({data: initializeData, value: contractBalance})
   })
 
   it('requires a non-null dataSource', async () => {
+    const paidOracle = await PaidOracle.new()
+    initializeData = encodeCall("initialize", ['address', 'uint256'], [ZERO_ADDRESS, reward])
+    
     await expectRevert(
-      PaidOracle.new(ZERO_ADDRESS, reward)
+      paidOracle.sendTransaction({data: initializeData, value: contractBalance})
     )
   })
 
