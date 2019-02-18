@@ -17,8 +17,9 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   mapping(uint256 => bytes32) results;
   mapping(uint256 => uint256) indexes;
   address public dataSource;
+  uint256 age;
 
-  event ResultSet(bytes32 _result, uint256 _date, address _sender);
+  event ResultSet(bytes32 _result, uint256 _date, uint256 _age, uint256 _index, address _sender);
 
   modifier onlyBefore(uint256 _date) {
     require(
@@ -58,7 +59,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function initialize(address _dataSource) public onlyNonNullDataSource(_dataSource) initializer {
     dataSource = _dataSource;
-    dates.push(0); // padding dates array with index 0.
+    dates.push(0); // padding dates array with index 0. The valid index has to be bigger than 0.
   }
 
   /**
@@ -102,11 +103,11 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   }
 
   /**
-   * @dev Checks if the result has been set
-   * @return True if the result has been set
+   * @dev Return the block timestamp that the data feed last updated
    */
-  function lastUpdated(uint256 /*id*/) external view returns (uint256 date, uint256 index) {
-    return (uint256(block.timestamp), dates.length - 1);
+  function lastUpdated(uint256 id) external view notId(id) returns (uint256 date, uint256 index) {
+    require(dates.length > 1, "There is no data getting set yet.");
+    return (age, dates.length - 1);
   }
 
   /**
@@ -129,6 +130,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @return True if the result has been set
    */
   function doesIndexExistFor(uint256 id, uint256 index) public view notId(id) returns (bool) {
+    require(index != 0, "The valid index has to bigger than 0.");
     return dates.length > index;
   }
 
@@ -146,7 +148,8 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     results[_date] = _result;
     dates.push(_date);
     indexes[_date] = dates.length - 1;
-    emit ResultSet(_result, _date, msg.sender);
+    age = uint256(block.timestamp);
+    emit ResultSet(_result, _date, age, dates.length - 1, msg.sender);
     _resultWasSet(_result, _date);
   }
 
