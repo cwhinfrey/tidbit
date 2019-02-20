@@ -116,7 +116,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param date The date of the data feed
    * @return True if the result has been set
    */
-  function isResultSetFor(uint256 id, uint256 date) public view onlyBefore(date) notId(id) returns (bool) {
+  function isResultSetFor(uint256 id, uint256 date) public view notId(id) returns (bool) {
     return indexes[date] > 0;
     //return results[date] > 0; // The assumption here is that there is no 0 value in the results;
     // or we could interate the dates array to check whether it got set,
