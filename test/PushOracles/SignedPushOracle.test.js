@@ -17,9 +17,8 @@ contract('SignedPushOracle', (accounts) => {
     // Deploy contracts
     const oracleConsumer = await OracleConsumerMock.new()
     const oracle = await SignedPushOracle.new()
-    // await oracle.initialize(signer, oracleConsumer.address, 0)
     const initializeData = encodeCall("initialize", ['address', 'address'], [signer, oracleConsumer.address])
-    // TODO: Why does this revert?
+    // https://forum.zeppelin.solutions/t/revert-when-calling-initialize-manually/314
     // await oracle.sendTransaction({data: initializeData, from: accounts[0]})
     await web3.eth.sendTransaction({data: initializeData, to: oracle.address, from: accounts[0], gasLimit: 500000})
 
