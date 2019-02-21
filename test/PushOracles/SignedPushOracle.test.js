@@ -7,8 +7,7 @@ const OracleConsumerMock = artifacts.require('OracleConsumerMock')
 
 require('chai').should()
 
-const RESULT = 'hello oracle'
-const RESULT_HASH = soliditySha3(RESULT);
+const RESULT = soliditySha3('hello oracle')
 
 contract('SignedPushOracle', (accounts) => {
   const signer = accounts[1]
@@ -23,12 +22,12 @@ contract('SignedPushOracle', (accounts) => {
     await web3.eth.sendTransaction({data: initializeData, to: oracle.address, from: accounts[0], gasLimit: 500000})
 
     // Sign and set result hash
-    const messageHash = soliditySha3(RESULT_HASH)
+    const messageHash = soliditySha3(RESULT, oracle.address)
     let signature = await sign(messageHash, signer)
-    await oracle.setResult(RESULT_HASH, signature)
+    await oracle.setResult(RESULT, signature)
     
     // Get result from oracle consumer
     const result = await oracleConsumer.result()
-    result.should.equal(RESULT_HASH)
+    result.should.equal(RESULT)
   })
 })

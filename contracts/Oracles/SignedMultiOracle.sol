@@ -26,7 +26,7 @@ contract SignedMultiOracle is MultiOracle {
      public
    {
      // Generate message hash
-     bytes32 messageHash = keccak256(abi.encodePacked(_result));
+     bytes32 messageHash = keccak256(abi.encodePacked(_id, _result, address(this)));
 
      // Recover signer from the signature with messageSigned
      address signer = messageHash.toEthSignedMessageHash().recover(_signature);

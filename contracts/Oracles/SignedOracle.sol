@@ -32,7 +32,7 @@ contract SignedOracle is Initializable, BasicOracle {
    */
   function setResult(bytes32 _result, bytes memory _signature) public {
     // Generate message hash
-    bytes32 messageHash = keccak256(abi.encodePacked(_result));
+    bytes32 messageHash = keccak256(abi.encodePacked(_result, address(this)));
 
     // Recover signer from the signature
     address signer = messageHash.toEthSignedMessageHash().recover(_signature);
