@@ -1,21 +1,15 @@
-import { toAscii, fromAscii, padRight } from 'web3-utils'
-import expectRevert from '../helpers/expectRevert'
-import expectEvent from '../helpers/expectEvent'
-import { web3 } from '../helpers/w3'
+import { expectEvent, shouldFail } from 'openzeppelin-test-helpers'
+const { toAscii, fromAscii, soliditySha3 } = web3.utils
 
 const MultiOracle = artifacts.require('MultiOracle')
 
-const BigNumber = web3.BigNumber;
-
-const should = require('chai')
-  .use(require('chai-bignumber')(BigNumber))
-  .should();
-
-const RESULT = 'hello oracle1'
-const RESULT2 = 'hello oracle2'
+const RESULT = soliditySha3('hello oracle1')
+const RESULT2 = soliditySha3('hello oracle2')
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ORACLE_ID_0 = '0x0'
+const ORACLE_ID_1 = '0x1'
 
 contract('MultiOracle', (accounts) => {
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
   const dataSource1 = accounts[1]
   const dataSource2 = accounts[2]
 
@@ -25,55 +19,55 @@ contract('MultiOracle', (accounts) => {
   })
 
   it('requires a non-null dataSource', async () => {
-    await expectRevert(oracle.newOracle(0, ZERO_ADDRESS))
+    await shouldFail(oracle.newOracle(ORACLE_ID_0, ZERO_ADDRESS))
   })
 
   it('is initialized with the correct state with unset results', async () => {
-    await expectRevert(oracle.resultFor(1))
-    const isResultSet = await oracle.isResultSet(1)
+    await shouldFail(oracle.resultFor(ORACLE_ID_1))
+    const isResultSet = await oracle.isResultSet(ORACLE_ID_1)
     isResultSet.should.equal(false)
   })
 
   it('is initialized with the correct state with unset oracles', async () => {
-    const isOracleSet0 = await oracle.isOracleSet(0)
+    const isOracleSet0 = await oracle.isOracleSet(ORACLE_ID_0)
     isOracleSet0.should.equal(false)
 
-    const isOracleSet1 = await oracle.isOracleSet(1)
+    const isOracleSet1 = await oracle.isOracleSet(ORACLE_ID_1)
     isOracleSet1.should.equal(false)
   })
 
   it('cannot set result for the same id twice', async () => {
-    await oracle.newOracle(0, dataSource1)
-    await oracle.setResult(0, RESULT, { from: dataSource1 })
-    await expectRevert(oracle.setResult(0, RESULT2, { from: dataSource1 }))
+    await oracle.newOracle(ORACLE_ID_0, dataSource1)
+    await oracle.setResult(ORACLE_ID_0, RESULT, { from: dataSource1 })
+    await shouldFail(oracle.setResult(ORACLE_ID_0, RESULT2, { from: dataSource1 }))
   })
 
   it('cannot set oracle for the same id twice', async () => {
-    await oracle.newOracle(0, dataSource1)
-    await expectRevert(oracle.newOracle(0, dataSource2))
+    await oracle.newOracle(ORACLE_ID_0, dataSource1)
+    await shouldFail(oracle.newOracle(ORACLE_ID_0, dataSource2))
   })
 
   it('can set result only by added dataSource', async () => {
-    await oracle.newOracle(1, dataSource1)
-    await expectRevert(oracle.setResult(1, RESULT, {from : dataSource2}))
-    const isResultSet = await oracle.isResultSet(1)
+    await oracle.newOracle(ORACLE_ID_1, dataSource1)
+    await shouldFail(oracle.setResult(ORACLE_ID_1, RESULT, {from : dataSource2}))
+    const isResultSet = await oracle.isResultSet(ORACLE_ID_1)
     isResultSet.should.equal(false)
 
-    await oracle.setResult(1, RESULT, {from : dataSource1})
-    const result = await oracle.resultFor(1)
-    toAscii(result).replace(/\u0000/g, '').should.equal(RESULT)
+    await oracle.setResult(ORACLE_ID_1, RESULT, {from : dataSource1})
+    const result = await oracle.resultFor(ORACLE_ID_1)
+    result.should.equal(RESULT)
 
-    const isResultSetSuccess = await oracle.isResultSet(1)
+    const isResultSetSuccess = await oracle.isResultSet(ORACLE_ID_1)
     isResultSetSuccess.should.equal(true)
   })
 
   it('should emit ResultSet event', async () => {
-    const bytes32Result = padRight(fromAscii(RESULT), 64)
-    await oracle.newOracle(2, dataSource2)
-    await expectEvent.inTransaction(
-      oracle.setResult(2, RESULT, { from: dataSource2 }),
+    await oracle.newOracle(ORACLE_ID_1, dataSource2)
+    const { logs } = await oracle.setResult(ORACLE_ID_1, RESULT, { from: dataSource2 })
+    await expectEvent.inLogs(
+      logs,
       'ResultSet',
-      { _result: bytes32Result, _sender: dataSource2 }
+      { _result: RESULT, _sender: dataSource2 }
     )
   })
   

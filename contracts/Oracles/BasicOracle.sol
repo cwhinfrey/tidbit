@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./OracleBase.sol";
 import "zos-lib/contracts/Initializable.sol";
@@ -10,13 +10,13 @@ import "zos-lib/contracts/Initializable.sol";
 contract BasicOracle is Initializable, OracleBase {
 
   // The address that is able to set the result
-  address public dataSource;
+  address payable public dataSource;
 
   /**
    *  @dev BasicOracle initializer
    *  @param _dataSource The address that is able to set the result
    */
-  function initialize(address _dataSource) public initializer {
+  function initialize(address payable _dataSource) public initializer {
     require(_dataSource != address(0), "Require a non-null dataSource");
     dataSource = _dataSource;
   }

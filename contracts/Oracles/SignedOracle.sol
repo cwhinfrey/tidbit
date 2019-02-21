@@ -1,7 +1,7 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./BasicOracle.sol";
-import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 import "zos-lib/contracts/Initializable.sol";
 
 /**
@@ -10,13 +10,14 @@ import "zos-lib/contracts/Initializable.sol";
  * signed message from the data source
  */
 contract SignedOracle is Initializable, BasicOracle {
+  using ECDSA for bytes32;
 
   /**
    * @dev SignedOracle initializer
    * @param _dataSource The address that is able to set the result
    */
   function initialize(
-    address _dataSource
+    address payable _dataSource
   )
     public
     initializer
@@ -29,13 +30,12 @@ contract SignedOracle is Initializable, BasicOracle {
    * @param _result The result being set
    * @param _signature The hash of the result signed by the data source
    */
-  function setResult(bytes32 _result, bytes _signature) public {
+  function setResult(bytes32 _result, bytes memory _signature) public {
     // Generate message hash
-    bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-    bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _result));
+    bytes32 messageHash = keccak256(abi.encodePacked(_result));
 
-    // Recover signer from the signature with messageSigned
-    address signer = ECRecovery.recover(prefixedHash, _signature);
+    // Recover signer from the signature
+    address signer = messageHash.toEthSignedMessageHash().recover(_signature);
 
     // Check that the signer is the dataSource
     require(signer == dataSource, "Invalid signature");

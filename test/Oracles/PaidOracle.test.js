@@ -1,16 +1,16 @@
-import expectRevert from '../helpers/expectRevert'
-import expectEvent from '../helpers/expectEvent'
-import { web3 } from '../helpers/w3'
+import { shouldFail } from 'openzeppelin-test-helpers'
 import { encodeCall } from 'zos-lib'
+import bnChai from 'bn-chai'
+import chai from 'chai'
+chai
+  .use(bnChai(web3.utils.BN))
+  .should()
+
+const { BN, soliditySha3, toWei } = web3.utils
 
 const PaidOracle = artifacts.require('PaidOracle')
-const BigNumber = require('bignumber.js');
 
-const should = require('chai')
-  .use(require('chai-bignumber')(BigNumber))
-  .should();
-
-const RESULT = 'hello oracle'
+const RESULT = soliditySha3('hello oracle')
 
 contract('PaidOracle', (accounts) => {
   const dataSource = accounts[2]
@@ -22,48 +22,52 @@ contract('PaidOracle', (accounts) => {
   beforeEach(async ()=> {
     oracle = await PaidOracle.new()
     initializeData = encodeCall("initialize", ['address', 'uint256'], [dataSource, reward])
-    await oracle.sendTransaction({data: initializeData, value: contractBalance})
+    await web3.eth.sendTransaction({data: initializeData, value: contractBalance, to: oracle.address, from: accounts[0], gasLimit: 500000})
+    // await oracle.sendTransaction({data: initializeData, value: contractBalance})
   })
 
   it('requires a non-null dataSource', async () => {
     const paidOracle = await PaidOracle.new()
     initializeData = encodeCall("initialize", ['address', 'uint256'], [ZERO_ADDRESS, reward])
     
-    await expectRevert(
+    await shouldFail(
       paidOracle.sendTransaction({data: initializeData, value: contractBalance})
     )
   })
 
   it('reward should be the contract balance if its less than the reward, otherwise return reward itself.', async () => {
-    const contractBalance = await web3.eth.getBalance(oracle.address)
+    const contractBalance = new BN(await web3.eth.getBalance(oracle.address))
     const oracleReward = await oracle.getReward()
-    const amount = Math.min(contractBalance, reward)
-    oracleReward.should.be.bignumber.equal(amount)
+    let amount = contractBalance.lt(reward) ? contractBalance : reward
+    oracleReward.should.eq.BN(amount)
   })
 
   it('should pay out reward', async () => {
-    const dataSourceOriginalBalance = await web3.eth.getBalance(dataSource)
-    dataSourceOriginalBalance.should.be.bignumber.equal(web3.utils.toWei('1000000', 'ether'))
+    const dataSourceOriginalBalance = new BN(await web3.eth.getBalance(dataSource))
 
     await oracle.setResult(RESULT, {from: dataSource })
 
-    const dataSourceBalance = await web3.eth.getBalance(dataSource)
-    '1000010'.should.be.bignumber.equal(web3.utils.fromWei(dataSourceBalance, 'ether'), 2, BigNumber.ROUND_UP)
+    const dataSourceBalance = new BN(await web3.eth.getBalance(dataSource))
+    const finalBalanceHigh = dataSourceOriginalBalance.add(new BN(reward))
+    const finalBalanceLow = finalBalanceHigh.sub(new BN(toWei('0.1')))
+    
+    dataSourceBalance.should.be.lt.BN(finalBalanceHigh)
+    dataSourceBalance.should.be.gt.BN(finalBalanceLow)
   })
 
   it('cannot pay out reward when the result was set twice', async () => {
     await oracle.setResult(RESULT, {from: dataSource })
-    await expectRevert (
+    await shouldFail (
       oracle.setResult(RESULT, { from: dataSource })
     )
   })
 
   it('isResultSet should be flipped after result was set', async () => {
-    let isResultSet = await oracle.isResultSet(0)
+    let isResultSet = await oracle.isResultSet('0x0')
     isResultSet.should.equal(false)
 
     await oracle.setResult(RESULT, {from: dataSource })
-    isResultSet = await oracle.isResultSet(0)
+    isResultSet = await oracle.isResultSet('0x0')
     isResultSet.should.equal(true)
   })
 })
