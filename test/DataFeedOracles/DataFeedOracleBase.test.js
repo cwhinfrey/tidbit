@@ -43,8 +43,8 @@ contract('initialize DataFeedOracleBase', (accounts) => {
     index.should.be.bignumber.equal(5)
 
     const [lastUpdatedDate, lastUpdatedIndex] = await oracle.lastUpdated(0)
+    lastUpdatedDate.should.be.bignumber.equal(now | 0)
     lastUpdatedIndex.should.be.bignumber.equal(5)
-    //TODO: Add test for last updated...
   })
 
   it('cannot be set by a different data source', async () => {
@@ -90,14 +90,13 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   // it.only('should emit ResultSet event', async () => {
   //   const bytes32Result = padRight(fromAscii('now'), 64)
   //   console.log(bytes32Result)
-  //   const uint256Result = new BN(fromAscii(1550631249))
+  //   const uint256Result = new BN("1550631249")
   //   console.log(uint256Result)
   //   await expectEvent.inTransaction(
   //     oracle.setResult('now', now, { from: dataSource }),
   //     'ResultSet', {
   //       _result: bytes32Result,
   //       _date: uint256Result,
-  //       _age: uint256Result,
   //       _index: 1,
   //       _sender: dataSource
   //     }

@@ -17,9 +17,8 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   mapping(uint256 => bytes32) results;
   mapping(uint256 => uint256) indexes;
   address public dataSource;
-  uint256 age;
 
-  event ResultSet(bytes32 _result, uint256 _date, uint256 _age, uint256 _index, address _sender);
+  event ResultSet(bytes32 _result, uint256 _date, uint256 _index, address _sender);
 
   modifier onlyBefore(uint256 _date) {
     require(
@@ -107,7 +106,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function lastUpdated(uint256 id) external view notId(id) returns (uint256 date, uint256 index) {
     require(dates.length > 1, "There is no data getting set yet.");
-    return (age, dates.length - 1);
+    return (dates[dates.length - 1], dates.length - 1);
   }
 
   /**
@@ -118,6 +117,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function isResultSetFor(uint256 id, uint256 date) public view notId(id) returns (bool) {
     return indexes[date] > 0;
+
     //return results[date] > 0; // The assumption here is that there is no 0 value in the results;
     // or we could interate the dates array to check whether it got set,
     // but this would be not efficient.
@@ -148,8 +148,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     results[_date] = _result;
     dates.push(_date);
     indexes[_date] = dates.length - 1;
-    age = uint256(block.timestamp);
-    emit ResultSet(_result, _date, age, dates.length - 1, msg.sender);
+    emit ResultSet(_result, _date, dates.length - 1, msg.sender);
     _resultWasSet(_result, _date);
   }
 
