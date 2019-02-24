@@ -30,19 +30,19 @@ contract('initialize DataFeedOracleBase', (accounts) => {
       await oracle.setResult(value, key, { from: dataSource });
     }
 
-    const isResultSet = await oracle.isResultSetFor(0, now)
+    const isResultSet = await oracle.isResultSetFor(now)
     isResultSet.should.equal(true)
-    const doesIndexExistFor = await oracle.doesIndexExistFor(0, 5)
+    const doesIndexExistFor = await oracle.doesIndexExistFor(5)
     doesIndexExistFor.should.equal(true)
 
-    const [resultByIndex, date] = await oracle.resultByIndexFor(0, 5)
+    const [resultByIndex, date] = await oracle.resultByIndexFor(5)
     toAscii(resultByIndex).replace(/\u0000/g, '').should.equal('now')
     date.should.be.bignumber.equal(now | 0 )
-    const [resultByDate, index] = await oracle.resultByDateFor(0, now)
+    const [resultByDate, index] = await oracle.resultByDateFor(now)
     toAscii(resultByDate).replace(/\u0000/g, '').should.equal('now')
     index.should.be.bignumber.equal(5)
 
-    const [lastUpdatedDate, lastUpdatedIndex] = await oracle.lastUpdated(0)
+    const [lastUpdatedDate, lastUpdatedIndex] = await oracle.lastUpdated()
     lastUpdatedDate.should.be.bignumber.equal(now | 0)
     lastUpdatedIndex.should.be.bignumber.equal(5)
   })
@@ -50,14 +50,14 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   it('cannot be set by a different data source', async () => {
     await expectRevert(oracle.setResult('now', now, { from: accounts[2] }))
 
-    const isResultSet = await oracle.isResultSetFor(0, now)
+    const isResultSet = await oracle.isResultSetFor(now)
     isResultSet.should.equal(false)
-    const doesIndexExistFor = await oracle.doesIndexExistFor(0, 1)
+    const doesIndexExistFor = await oracle.doesIndexExistFor(1)
     doesIndexExistFor.should.equal(false)
 
-    await expectRevert(oracle.resultByIndexFor(0, 1))
-    await expectRevert(oracle.resultByDateFor(0, now))
-    await expectRevert(oracle.lastUpdated(0))
+    await expectRevert(oracle.resultByIndexFor(1))
+    await expectRevert(oracle.resultByDateFor(now))
+    await expectRevert(oracle.lastUpdated())
   })
 
   it('cannot be set twice', async () => {
@@ -74,34 +74,35 @@ contract('initialize DataFeedOracleBase', (accounts) => {
     for( var [key, value] of DATAFEEDS ){
       await oracle.setResult(value, key, { from: dataSource });
     }
-    const doesIndexExistFor = await oracle.doesIndexExistFor(0, 7)
+    const doesIndexExistFor = await oracle.doesIndexExistFor(7)
     doesIndexExistFor.should.equal(false)
-    await expectRevert(oracle.resultByIndexFor(0, 7))
+    await expectRevert(oracle.resultByIndexFor(7))
 
-    let isResultSet = await oracle.isResultSetFor(0, now - 0.5 * 60 * 60)
+    let isResultSet = await oracle.isResultSetFor(now - 0.5 * 60 * 60)
     isResultSet.should.equal(false)
-    await expectRevert(oracle.resultByDateFor(0, now - 0.5 * 60 * 60))
+    await expectRevert(oracle.resultByDateFor(now - 0.5 * 60 * 60))
 
-    isResultSet = await oracle.isResultSetFor(0, now + 0.5 * 60 * 60)
+    isResultSet = await oracle.isResultSetFor(now + 0.5 * 60 * 60)
     isResultSet.should.equal(false)
-    await expectRevert(oracle.resultByDateFor(0, now + 0.5 * 60 * 60))
+    await expectRevert(oracle.resultByDateFor(now + 0.5 * 60 * 60))
   })
 
-  // it.only('should emit ResultSet event', async () => {
-  //   const bytes32Result = padRight(fromAscii('now'), 64)
-  //   console.log(bytes32Result)
-  //   const uint256Result = new BN("1550631249")
-  //   console.log(uint256Result)
-  //   await expectEvent.inTransaction(
-  //     oracle.setResult('now', now, { from: dataSource }),
-  //     'ResultSet', {
-  //       _result: bytes32Result,
-  //       _date: uint256Result,
-  //       _index: 1,
-  //       _sender: dataSource
-  //     }
-  //   )
-  // })
+  it.only('should emit ResultSet event', async () => {
+    const bytes32Result = padRight(fromAscii('now'), 64)
+    const myValue = now | 0
+    console.log(myValue.toString())
+    const uint256Result = new BN(padRight(myValue.toString(), 256))
+    console.log(uint256Result)
+    await expectEvent.inTransaction(
+      oracle.setResult('now', now, { from: dataSource }),
+      'ResultSet', {
+        _result: bytes32Result,
+        _date: uint256Result,
+        _index: 1,
+        _sender: dataSource
+      }
+    )
+  })
 
 
 })

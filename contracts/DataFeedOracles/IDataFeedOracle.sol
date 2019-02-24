@@ -6,9 +6,9 @@ pragma solidity ^0.4.24;
  */
 
 interface IDataFeedOracle {
-    function isResultSetFor(uint256 id, uint256 date) external view returns (bool);
-    function doesIndexExistFor(uint256 id, uint256 index) external view returns (bool);
-    function resultByDateFor(uint256 id, uint256 date) external view returns (bytes32, uint256);
-    function resultByIndexFor(uint256 id, uint256 index) external view returns (bytes32, uint256);
-    function lastUpdated(uint256 id) external view returns (uint256, uint256); // date: latest block timestamp when calculate the Median
+    function isResultSetFor(uint256 date) external view returns (bool);
+    function doesIndexExistFor(uint256 index) external view returns (bool);
+    function resultByDateFor(uint256 date) external view returns (bytes32, uint256);
+    function resultByIndexFor(uint256 index) external view returns (bytes32, uint256);
+    function lastUpdated() external view returns (uint256, uint256); // date: latest block timestamp when calculate the Median
 }

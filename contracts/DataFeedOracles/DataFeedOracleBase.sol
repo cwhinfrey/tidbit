@@ -36,14 +36,6 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     _;
   }
 
-  modifier notId(uint256 _id) {
-    require(
-      _id == 0,
-      "This oracle does not support ids."
-    );
-    _;
-  }
-
   modifier onlyNonNullDataSource(address _dataSource) {
     require(
       _dataSource != address(0),
@@ -81,41 +73,38 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
     /**
    * @dev Returns the result or reverts if it hasn't been set by index
-   * @param id This is not used in single-event oracles and should be 0
    * @param index The index of data feed by date.
    * @return The result or the oracle's single event
    */
-  function resultByIndexFor(uint256 id, uint256 index) external view notId(id) returns (bytes32, uint256) {
-    require(doesIndexExistFor(id, index), "The index is not been set yet.");
+  function resultByIndexFor(uint256 index) external view returns (bytes32, uint256) {
+    require(doesIndexExistFor(index), "The index is not been set yet.");
     return (results[dates[index]], dates[index]);
   }
 
   /**
    * @dev Returns the result or reverts if it hasn't been set by index
-   * @param id This is not used in single-event oracles and should be 0
    * @param date The date of data feed
    * @return The result or the oracle's single event
    */
-  function resultByDateFor(uint256 id, uint256 date) external view notId(id) returns (bytes32, uint256) {
-    require(isResultSetFor(id, date), "The date is not been set yet.");
+  function resultByDateFor(uint256 date) external view returns (bytes32, uint256) {
+    require(isResultSetFor(date), "The date is not been set yet.");
     return (results[date], indexes[date]);
   }
 
   /**
    * @dev Return the block timestamp that the data feed last updated
    */
-  function lastUpdated(uint256 id) external view notId(id) returns (uint256 date, uint256 index) {
+  function lastUpdated() external view returns (uint256 date, uint256 index) {
     require(dates.length > 1, "There is no data getting set yet.");
     return (dates[dates.length - 1], dates.length - 1);
   }
 
   /**
    * @dev Checks if the result has been set with given date
-   * @param id This is not used in single-event oracles and should be 0
    * @param date The date of the data feed
    * @return True if the result has been set
    */
-  function isResultSetFor(uint256 id, uint256 date) public view notId(id) returns (bool) {
+  function isResultSetFor(uint256 date) public view returns (bool) {
     return indexes[date] > 0;
 
     //return results[date] > 0; // The assumption here is that there is no 0 value in the results;
@@ -125,11 +114,10 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
   /**
    * @dev Checks if the result has been set with given index
-   * @param id This is not used in single-event oracles and should be 0
    * @param index The index of the data feed order by date
    * @return True if the result has been set
    */
-  function doesIndexExistFor(uint256 id, uint256 index) public view notId(id) returns (bool) {
+  function doesIndexExistFor(uint256 index) public view returns (bool) {
     require(index != 0, "The valid index has to bigger than 0.");
     return dates.length > index;
   }
