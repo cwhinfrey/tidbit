@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./MultiOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
@@ -22,7 +22,7 @@ contract PaidMultiOracle is Initializable, MultiOracle {
    * @dev Returns the oracle reward or the contract's balance if it's less than the reward
    */
   function getReward() public view returns (uint256) {
-    return Math.min256(reward, address(this).balance);
+    return Math.min(reward, address(this).balance);
   }
 
   /*

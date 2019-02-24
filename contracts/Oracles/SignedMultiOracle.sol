@@ -1,13 +1,15 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./MultiOracle.sol";
-import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 
 /**
  * @title SignedMultiOracle
  * @dev Extends MultiOracle to use signed messages
  */
 contract SignedMultiOracle is MultiOracle {
+  using ECDSA for bytes32;
+
   /**
    * @dev Sets the result of the oracle with a signed message.
    * To resolve the issue that truffle not supporting function overrides,
@@ -19,16 +21,15 @@ contract SignedMultiOracle is MultiOracle {
    function setResultWithSignature(
      bytes32 _id,
      bytes32 _result,
-     bytes _signature
+     bytes memory _signature
    )
      public
    {
      // Generate message hash
-     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-     bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _result));
+     bytes32 messageHash = keccak256(abi.encodePacked(_id, _result, address(this)));
 
      // Recover signer from the signature with messageSigned
-     address signer = ECRecovery.recover(prefixedHash, _signature);
+     address signer = messageHash.toEthSignedMessageHash().recover(_signature);
      // Check that the signer is the dataSource
      require(signer == results[_id].dataSource, "Invalid signature");
      _setResult(_id, _result);

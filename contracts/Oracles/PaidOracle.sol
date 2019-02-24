@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
@@ -16,7 +16,7 @@ contract PaidOracle is Initializable, BasicOracle {
   uint256 public reward;
 
   function initialize(
-    address _dataSource,
+    address payable _dataSource,
     uint256 _reward
   )
     public
@@ -36,7 +36,7 @@ contract PaidOracle is Initializable, BasicOracle {
     returns 
     (uint256)
   {
-    return Math.min256(reward, address(this).balance);
+    return Math.min(reward, address(this).balance);
   }
 
   /*
