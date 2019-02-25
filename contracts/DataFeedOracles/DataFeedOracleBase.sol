@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 import "./IDataFeedOracle.sol";
 import "zos-lib/contracts/Initializable.sol";
@@ -16,7 +16,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   uint256[] dates; // defaults should be all 0
   mapping(uint256 => bytes32) results;
   mapping(uint256 => uint256) indexes;
-  address public dataSource;
+  address payable public dataSource;
 
   event ResultSet(bytes32 _result, uint256 _date, uint256 _index, address _sender);
 
@@ -48,7 +48,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    *  @dev DataFeedBase initializer
    *  @param _dataSource The address that is able to set the result
    */
-  function initialize(address _dataSource) public onlyNonNullDataSource(_dataSource) initializer {
+  function initialize(address payable _dataSource) public onlyNonNullDataSource(_dataSource) initializer {
     dataSource = _dataSource;
     dates.push(0); // padding dates array with index 0. The valid index has to be bigger than 0.
   }
