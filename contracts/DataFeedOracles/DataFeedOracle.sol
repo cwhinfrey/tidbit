@@ -6,7 +6,6 @@ import "zos-lib/contracts/Initializable.sol";
 contract DataFeedOracle is Initializable, DataFeedOracleBase {
 
   mapping(address => bool) dataSources;
-  uint8 minValidFeeds;
   uint256 lastUpdated;
 
   /**
@@ -27,7 +26,9 @@ contract DataFeedOracle is Initializable, DataFeedOracleBase {
   */
   function setResult(DataFeedOracleBase[] calldata _dataFeeds) external {
     for (uint i = 0; i < _dataFeeds.length; i++) {
+
        require(dataSources[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
+
        uint256 date;
        uint256 index;
        (date, index) = _dataFeeds[i].lastUpdated();
