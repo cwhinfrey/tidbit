@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "./DataFeedOracleBase.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "zos-lib/contracts/Initializable.sol";
 
 contract DataFeedOracle is Initializable, DataFeedOracleBase {
@@ -37,7 +38,7 @@ contract DataFeedOracle is Initializable, DataFeedOracleBase {
        require(date > lastUpdated, "Stale data.");
 
        if(i != _dataFeeds.length - 1) {
-         require(_dataFeeds[i].lastUpdatedPrice() <= _dataFeeds[i+1].lastUpdatedPrice(), "The dataFeeds is not sorted.");
+         require(uint256(_dataFeeds[i].lastUpdatedPrice()) <= uint256(_dataFeeds[i+1].lastUpdatedPrice()), "The dataFeeds is not sorted.");
        }
     }
 
