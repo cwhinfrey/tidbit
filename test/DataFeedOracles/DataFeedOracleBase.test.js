@@ -61,6 +61,9 @@ contract('initialize DataFeedOracleBase', (accounts) => {
     const [lastUpdatedDate, lastUpdatedIndex] = Object.values(await oracle.lastUpdated())
     lastUpdatedDate.should.eq.BN(ORACLE_INDEX_5_DATE)
     lastUpdatedIndex.should.eq.BN(ORACLE_INDEX_5)
+
+    const lastUpdatedPrice = await oracle.lastUpdatedPrice()
+    lastUpdatedPrice.should.equal(ORACLE_INDEX_5_RESULT)
   })
 
   it('cannot be set by a different data source', async () => {
@@ -74,6 +77,7 @@ contract('initialize DataFeedOracleBase', (accounts) => {
     await shouldFail(oracle.resultByIndexFor(ORACLE_INDEX_1))
     await shouldFail(oracle.resultByDateFor(ORACLE_INDEX_5_DATE))
     await shouldFail(oracle.lastUpdated())
+    await shouldFail(oracle.lastUpdatedPrice())
   })
 
   it('cannot be set twice', async () => {
