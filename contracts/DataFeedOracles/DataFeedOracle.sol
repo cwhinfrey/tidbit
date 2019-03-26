@@ -10,13 +10,15 @@ contract DataFeedOracle is Initializable, DataFeedOracleBase {
 
   /**
    * @dev DataFeedOracle constructor
-   * @param _dataSources Valid datafeeds to update price.
+   * @param _dataFeedSources Valid datafeeds to update price.
+   * @param _dataSource The address that is able to set the result
    */
-  function initialize(address[] memory _dataSources) public initializer {
-     require(_dataSources.length > 0, "Cannot initialize DataFeedOracle without empty data feeds");
-     for (uint i = 0; i < _dataSources.length; i++) {
-       dataSources[_dataSources[i]] = true;
+  function initialize(address[] memory _dataFeedSources, address payable _dataSource) public initializer {
+     require(_dataFeedSources.length > 0, "Cannot initialize DataFeedOracle without empty data feeds");
+     for (uint i = 0; i < _dataFeedSources.length; i++) {
+       dataSources[_dataFeedSources[i]] = true;
      }
+     DataFeedOracleBase.initialize(_dataSource);
   }
   /**
    * @dev setResult with sorted dataFeeds
