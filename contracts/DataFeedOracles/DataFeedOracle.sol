@@ -28,6 +28,7 @@ contract DataFeedOracle is Initializable, DataFeedOracleBase {
    * It could be achieved cheaper off-chain than on-chain.
   */
   function setResult(DataFeedOracleBase[] calldata _dataFeeds) external {
+
     for (uint i = 0; i < _dataFeeds.length; i++) {
 
        require(dataSources[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
@@ -47,8 +48,9 @@ contract DataFeedOracle is Initializable, DataFeedOracleBase {
       uint256 one = uint256(_dataFeeds[(_dataFeeds.length / 2) - 1].lastUpdatedPrice());
       uint256 two = uint256(_dataFeeds[(_dataFeeds.length / 2)].lastUpdatedPrice());
       medianValue = bytes32((one + two) / 2);
+    } else {
+      medianValue = _dataFeeds[_dataFeeds.length / 2].lastUpdatedPrice();
     }
-    medianValue = _dataFeeds[_dataFeeds.length / 2].lastUpdatedPrice();
 
     super.setResult(medianValue, uint256(block.timestamp));
   }
