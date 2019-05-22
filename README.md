@@ -4,7 +4,7 @@ A library for oracles on Ethereum.
 
 ### Contracts
 
-For more information on each contract checkout the  [documentation](https://levelkdev.github.io/tidbit/docs/Oracles_OracleBase.html).
+For more information on each contract checkout the  [documentation](https://github.com/levelkdev/tidbit/blob/master/docs/docs/api_Oracles_OracleBase.md).
 
 ##### Inheritance Tree
 
