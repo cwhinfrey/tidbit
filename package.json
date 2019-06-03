@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "files": [
     "build",
-    "lib",
-    "src"
+    "contracts",
+    "test"
   ],
   "repository": {
     "type": "git",
