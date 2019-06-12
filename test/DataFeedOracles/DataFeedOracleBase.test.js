@@ -51,8 +51,6 @@ contract('DataFeedOracleBase', (accounts) => {
     await shouldFail(oracle.resultByIndex(ORACLE_INDEX_1))
     await shouldFail(oracle.resultByIndex(ORACLE_INDEX_0))
     await shouldFail(oracle.resultByDate(now))
-    await shouldFail(oracle.latestResultDate())
-    await shouldFail(oracle.latestResult())
 
     const dateHasResult = await oracle.dateHasResult(now)
     dateHasResult.should.equal(false)
@@ -99,8 +97,6 @@ contract('DataFeedOracleBase', (accounts) => {
 
     await shouldFail(oracle.resultByIndex(ORACLE_INDEX_1))
     await shouldFail(oracle.resultByDate(ORACLE_INDEX_5_DATE))
-    await shouldFail(oracle.latestResultDate())
-    await shouldFail(oracle.latestResult())
   })
 
   it('cannot be set twice', async () => {

@@ -27,14 +27,6 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
     await shouldFail(oracle.initialize([]))
   })
 
-  it('cannot read median value if the dataFeeds data have not been set yet.', async () => {
-    let dataFeedOracle = await MedianDataFeedOracle.new()
-    await dataFeedOracle.initialize(dataSources, dataFeedOracleDataSource)
-    // There is no median value returned if the results hasn't been set yet.
-    await shouldFail(dataFeedOracle.latestResultDate())
-    await shouldFail(dataFeedOracle.latestResult())
-  })
-
   it('Set medianDataFeed', async () => {
     let oracles = []
     for (var i = 0; i < dataSources.length; i++) {
