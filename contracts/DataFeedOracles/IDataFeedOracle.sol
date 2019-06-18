@@ -11,5 +11,5 @@ interface IDataFeedOracle {
     function resultByDateFor(uint256 date) external view returns (bytes32, uint256);
     function resultByIndexFor(uint256 index) external view returns (bytes32, uint256);
     function lastUpdated() external view returns (uint256, uint256); // date: latest block timestamp when calculate the Median
-    function lastUpdatedPrice() external view returns (bytes32);
+    function lastUpdatedData() external view returns (bytes32);
 }

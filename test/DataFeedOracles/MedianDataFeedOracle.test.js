@@ -1,7 +1,7 @@
 import { expectEvent, shouldFail } from 'openzeppelin-test-helpers'
 const { bytes32ToNumString, getMeidan, numberToBytes32 } = require('./Utils.test')
 
-const DataFeedOracle = artifacts.require('DataFeedOracle')
+const MedianDataFeedOracle = artifacts.require('MedianDataFeedOracle')
 const DataFeedOracleBase = artifacts.require('DataFeedOracleBase')
 
 require('chai').should()
@@ -18,21 +18,21 @@ const ORACLE_RESULT = PRICES.map(
       z => [ DATES[y.indexOf(z)], numberToBytes32(z * Math.pow(10, 18) )]
 ))
 
-contract('initialize DataFeedOracle', (accounts) => {
+contract('initialize MedianDataFeedOracle', (accounts) => {
   const dataFeedOracleDataSource = accounts[5]
   const dataSources = [accounts[1], accounts[2], accounts[3], accounts[4]]
 
-  it('cannot initilize dataFeedOracle with empty oracle array.', async () => {
-    let oracle = await DataFeedOracle.new()
+  it('cannot initilize medianDataFeedOracle with empty oracle array.', async () => {
+    let oracle = await MedianDataFeedOracle.new()
     await shouldFail(oracle.initialize([]))
   })
 
   it('cannot read median value if the dataFeeds data have not been set yet.', async () => {
-    let dataFeedOracle = await DataFeedOracle.new()
+    let dataFeedOracle = await MedianDataFeedOracle.new()
     await dataFeedOracle.initialize(dataSources, dataFeedOracleDataSource)
     // There is no median value returned if the results hasn't been set yet.
     await shouldFail(dataFeedOracle.lastUpdated())
-    await shouldFail(dataFeedOracle.lastUpdatedPrice())
+    await shouldFail(dataFeedOracle.lastUpdatedData())
   })
 
   it('cannot set result if any of the sub-oracles have not been set yet.', async () => {
@@ -47,12 +47,12 @@ contract('initialize DataFeedOracle', (accounts) => {
       oracles.push(oracle.address)
     }
 
-    let dataFeedOracle = await DataFeedOracle.new()
+    let dataFeedOracle = await MedianDataFeedOracle.new()
     await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
     await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
-    const lastUpdatedPrice = await dataFeedOracle.lastUpdatedPrice()
+    const lastUpdatedData = await dataFeedOracle.lastUpdatedData()
     const median = getMeidan(PRICES.map(x => x[1] * Math.pow(10, 18)))
-    bytes32ToNumString(lastUpdatedPrice).should.equal(median.toString())
+    bytes32ToNumString(lastUpdatedData).should.equal(median.toString())
   })
 
 })

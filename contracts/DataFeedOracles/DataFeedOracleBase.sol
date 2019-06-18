@@ -99,7 +99,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     return (dates[dates.length - 1], dates.length - 1);
   }
 
-  function lastUpdatedPrice() external view returns(bytes32) {
+  function lastUpdatedData() external view returns(bytes32) {
     require(dates.length > 1, "There is no data getting set yet.");
     return results[dates[dates.length - 1]];
   }
