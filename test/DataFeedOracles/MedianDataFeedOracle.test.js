@@ -35,7 +35,7 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
     await shouldFail(dataFeedOracle.lastUpdatedData())
   })
 
-  it('cannot set result if any of the sub-oracles have not been set yet.', async () => {
+  it('Set medianDataFeed', async () => {
     let oracles = []
     for (var i = 0; i < dataSources.length; i++) {
       let oracle = await DataFeedOracleBase.new()
@@ -49,10 +49,13 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
 
     let dataFeedOracle = await MedianDataFeedOracle.new()
     await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+    const now = (new Date()).getTime() / 1000 | 0
     await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
     const lastUpdatedData = await dataFeedOracle.lastUpdatedData()
     const median = getMeidan(PRICES.map(x => x[1] * Math.pow(10, 18)))
     bytes32ToNumString(lastUpdatedData).should.equal(median.toString())
+    const [lastUpdatedDate, lastUpdatedIndex] = Object.values(await dataFeedOracle.lastUpdated())
+    lastUpdatedDate.should.eq.BN(now)
   })
 
 })
