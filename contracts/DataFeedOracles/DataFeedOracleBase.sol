@@ -5,61 +5,79 @@ import "zos-lib/contracts/Initializable.sol";
 
 /**
  * @title DataFeedOracleBase
- * @dev Lays out generic single-event oracle functionality. It implements
- * an internal function to set the result that can be called by public
- * functions that extend DataFeedOracleBase.
- * There is only one date, index and result per data feed.
+ * @dev Allows a data source address to set bytes32 result values by date. Result values
+ *      can be publicly read by date and by index.
  */
-
 contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
-  uint256[] dates; // defaults should be all 0
+  uint256[] dates;
+
   mapping(uint256 => bytes32) results;
+
   mapping(uint256 => uint256) indexes;
+
   address payable public dataSource;
 
   event ResultSet(bytes32 _result, uint256 _date, uint256 _index, address _sender);
 
+  /**
+   * @dev Throws if _date is not current or past.
+   * @param _date Date to check against the `now` value.
+   */
   modifier onlyBefore(uint256 _date) {
     require(
       _date <= now,
-      "The date has to before now."
+      "Date cannot be in the future"
     );
     _;
   }
 
+  /**
+   * @dev Throws if the data source is not the caller.
+   * @param _dataSource The address of the data source.
+   */
   modifier onlyDataSource(address _dataSource) {
     require(
       msg.sender == _dataSource,
-      "The caller is not the data source."
+      "The caller is not the data source"
     );
     _;
   }
 
-  modifier onlyNonNullDataSource(address _dataSource) {
+  /**
+   * @dev Throws if the data source is the zero address.
+   * @param _dataSource The address of the data source.
+   */
+  modifier onlyNonZeroDataSource(address _dataSource) {
     require(
       _dataSource != address(0),
-      "Require a non-null dataSource"
+      "_dataSource cannot be address(0)"
     );
     _;
   }
 
   /**
-   *  @dev DataFeedBase initializer
-   *  @param _dataSource The address that is able to set the result
+   *  @dev Initializes DataFeedOracleBase.
+   *  @param _dataSource The address that is allowed to set results.
    */
-  function initialize(address payable _dataSource) public onlyNonNullDataSource(_dataSource) initializer {
+  function initialize(address payable _dataSource)
+    public
+    onlyNonZeroDataSource(_dataSource) initializer {
     dataSource = _dataSource;
-    dates.push(0); // padding dates array with index 0. The valid index has to be bigger than 0.
+    dates.push(0); // Valid indices have to be greater than 0.
   }
 
   /**
-   * @dev Sets the result of the oracle
-   * @param _result The result being set
-   * @param _date The date of the data feed
-   * @return The index of the data feed order by date
+   * @dev Sets a bytes32 result for the given date.
+   * @param _result The result being set.
+   * @param _date The date for the result.
+   * @return The index of the result.
    */
-  function setResult(bytes32 _result, uint256 _date) public onlyDataSource(dataSource) returns (uint256 index) {
+  function setResult(bytes32 _result, uint256 _date)
+    public
+    onlyDataSource(dataSource)
+    returns (uint256 index)
+  {
     if (dates.length > 0) {
       require(_date > dates[dates.length - 1]);
     }
@@ -68,85 +86,79 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   }
 
   /**
-   *  Public functions
+   * @dev Returns a result and a date, given an index. Throws if no result exists for
+   *      the given index.
+   * @param _index The index of the result.
+   * @return The result value and the date of the result.
    */
-
-    /**
-   * @dev Returns the result or reverts if it hasn't been set by index
-   * @param index The index of data feed by date.
-   * @return The result or the oracle's single event
-   */
-  function resultByIndexFor(uint256 index) external view returns (bytes32, uint256) {
-    require(doesIndexExistFor(index), "The index is not been set yet.");
-    return (results[dates[index]], dates[index]);
+  function resultByIndexFor(uint256 _index) external view returns (bytes32, uint256) {
+    require(doesIndexExistFor(_index), "The index is not been set yet.");
+    return (results[dates[_index]], dates[_index]);
   }
 
   /**
-   * @dev Returns the result or reverts if it hasn't been set by index
-   * @param date The date of data feed
-   * @return The result or the oracle's single event
+   * @dev Returns a result and an index, given a date. Throws if no result exists for
+   *      the given date.
+   * @param _date The date of the result.
+   * @return The result value and the index of the result.
    */
-  function resultByDateFor(uint256 date) external view returns (bytes32, uint256) {
-    require(isResultSetFor(date), "The date is not been set yet.");
-    return (results[date], indexes[date]);
+  function resultByDateFor(uint256 _date) external view returns (bytes32, uint256) {
+    require(isResultSetFor(_date), "The date is not been set yet.");
+    return (results[_date], indexes[_date]);
   }
 
   /**
-   * @dev Return the block timestamp that the data feed last updated
+   * @notice Throws if no results have been set.
+   * @return The date of the last result that was set.
    */
   function lastUpdated() external view returns (uint256 date, uint256 index) {
-    require(dates.length > 1, "There is no data getting set yet.");
+    require(dates.length > 1, "No results have been set");
     return (dates[dates.length - 1], dates.length - 1);
   }
 
-  function lastUpdatedData() external view returns(bytes32) {
-    require(dates.length > 1, "There is no data getting set yet.");
+  /**
+   * @notice Throws if no results have been set.
+   * @return The last result that was set.
+   */
+  function lastUpdatedData() external view returns (bytes32) {
+    require(dates.length > 1, "No results have been set");
     return results[dates[dates.length - 1]];
   }
 
   /**
-   * @dev Checks if the result has been set with given date
-   * @param date The date of the data feed
-   * @return True if the result has been set
+   * @param _date The date of the data feed
+   * @return `true` if a result has been set for the given date.
    */
-  function isResultSetFor(uint256 date) public view returns (bool) {
-    return indexes[date] > 0;
-
-    //return results[date] > 0; // The assumption here is that there is no 0 value in the results;
-    // or we could interate the dates array to check whether it got set,
-    // but this would be not efficient.
+  function isResultSetFor(uint256 _date) public view returns (bool) {
+    return indexes[_date] > 0;
   }
 
   /**
-   * @dev Checks if the result has been set with given index
-   * @param index The index of the data feed order by date
-   * @return True if the result has been set
+   * @param _index The index of a result.
+   * @return `true` if a result for the given index exists.
    */
-  function doesIndexExistFor(uint256 index) public view returns (bool) {
-    require(index != 0, "The valid index has to bigger than 0.");
-    return dates.length > index;
+  function doesIndexExistFor(uint256 _index) public view returns (bool) {
+    require(_index != 0, "The valid index has to bigger than 0.");
+    return dates.length > _index;
   }
 
   /**
-   *  Internal functions
+   * @dev Sets a bytes32 result value and a date for the result.
+   * @param _result The result to set.
+   * @param _date The date of the result.
    */
-
-   /**
-    * @dev Set's the result, emits ResultSet, and calls the _resultWasSet()
-    * overridable function
-    * @param _result The result of the oracle's single event.
-    * @param _date The date of the result.
-    */
   function _setResult(bytes32 _result, uint256 _date) internal {
     results[_date] = _result;
     dates.push(_date);
     indexes[_date] = dates.length - 1;
-    emit ResultSet(_result, _date, dates.length - 1, msg.sender);
+
     _resultWasSet(_result, _date);
+
+    emit ResultSet(_result, _date, dates.length - 1, msg.sender);
   }
 
   /**
-   * @dev Empty function meant to be overidden in subclasses
+   * @dev Unimplemented function meant to be overidden in subclasses.
    */
   function _resultWasSet(bytes32 /*_result*/, uint256 /*_date*/) internal {
     // optional override
