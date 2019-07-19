@@ -33,16 +33,21 @@ const RESULTS_DATA = new Map([
   [ORACLE_INDEX_5_DATE, ORACLE_INDEX_5_RESULT] // index 5
 ])
 
-contract('initialize DataFeedOracleBase', (accounts) => {
+contract('DataFeedOracleBase', (accounts) => {
   const dataSource = accounts[1]
 
   let oracle
   beforeEach(async ()=> {
     oracle = await DataFeedOracleBase.new()
-    await oracle.initialize(dataSource)
   })
 
-  it('can set result by owner', async () => {
+  it('cannot be initialized with data source as the zero address', async () => {
+    await shouldFail(oracle.initialize(0))
+  })
+
+  it('can set result by data source', async () => {
+    await oracle.initialize(dataSource)
+
     for( var [key, value] of RESULTS_DATA ){
       await oracle.setResult(value, key, { from: dataSource });
     }
@@ -68,6 +73,8 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   })
 
   it('cannot be set by a different data source', async () => {
+    await oracle.initialize(dataSource)
+
     await shouldFail(oracle.setResult(ORACLE_INDEX_5_RESULT, ORACLE_INDEX_5_DATE, { from: accounts[2] }))
 
     const isResultSet = await oracle.isResultSetFor(ORACLE_INDEX_5_DATE)
@@ -82,22 +89,26 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   })
 
   it('cannot be set twice', async () => {
+    await oracle.initialize(dataSource)
     await oracle.setResult(ORACLE_INDEX_5_RESULT, ORACLE_INDEX_5_DATE, { from: dataSource })
     await shouldFail(oracle.setResult(ORACLE_INDEX_5_RESULT, ORACLE_INDEX_5_DATE, { from: dataSource }))
   })
 
   it('cannot set date earlier than last added data feed', async () => {
+    await oracle.initialize(dataSource)
     await oracle.setResult(ORACLE_INDEX_5_RESULT, ORACLE_INDEX_5_DATE, { from: dataSource })
     await shouldFail(oracle.setResult(ORACLE_INDEX_4_RESULT, ORACLE_INDEX_4_DATE, { from: dataSource }))
   })
 
   it('cannot set a date later than the `now` value', async () => {
+    await oracle.initialize(dataSource)
     await shouldFail(
       oracle.setResult(HALF_AN_HOUR_LATER_RESULT, HALF_AN_HOUR_LATER, { from: dataSource })
     )
   })
 
   it('cannot fetch result with invalid index or date', async () => {
+    await oracle.initialize(dataSource)
     for( var [key, value] of RESULTS_DATA ){
       await oracle.setResult(value, key, { from: dataSource });
     }
@@ -115,6 +126,7 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   })
 
   it('should emit ResultSet event', async () => {
+    await oracle.initialize(dataSource)
     const { logs } = await oracle.setResult(ORACLE_INDEX_1_RESULT, ORACLE_INDEX_1_DATE, { from: dataSource})
     const dateResult = new BN(ORACLE_INDEX_1_DATE)
     const indexResult = new BN(ORACLE_INDEX_1)
@@ -128,6 +140,4 @@ contract('initialize DataFeedOracleBase', (accounts) => {
       }
     )
   })
-
-
 })

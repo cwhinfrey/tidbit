@@ -34,24 +34,11 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
   /**
    * @dev Throws if the data source is not the caller.
-   * @param _dataSource The address of the data source.
    */
-  modifier onlyDataSource(address _dataSource) {
+  modifier onlyDataSource() {
     require(
-      msg.sender == _dataSource,
+      msg.sender == dataSource,
       "The caller is not the data source"
-    );
-    _;
-  }
-
-  /**
-   * @dev Throws if the data source is the zero address.
-   * @param _dataSource The address of the data source.
-   */
-  modifier onlyNonZeroDataSource(address _dataSource) {
-    require(
-      _dataSource != address(0),
-      "_dataSource cannot be address(0)"
     );
     _;
   }
@@ -60,11 +47,10 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    *  @dev Initializes DataFeedOracleBase.
    *  @param _dataSource The address that is allowed to set results.
    */
-  function initialize(address _dataSource)
-    public
-    onlyNonZeroDataSource(_dataSource) initializer {
+  function initialize(address _dataSource) public initializer {
+    require(_dataSource != address(0), "_dataSource cannot be address(0)");
     dataSource = _dataSource;
-    dates.push(0); // Valid indices have to be greater than 0.
+    dates.push(0); // The first valid result index starts at 1
   }
 
   /**
@@ -75,7 +61,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function setResult(bytes32 _result, uint256 _date)
     public
-    onlyDataSource(dataSource)
+    onlyDataSource()
     onlyBefore(_date)
     returns (uint256 index)
   {
