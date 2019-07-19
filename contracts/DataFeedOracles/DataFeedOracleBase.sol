@@ -12,9 +12,9 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
   uint256[] dates;
 
-  mapping(uint256 => bytes32) results;
+  mapping(uint256 => bytes32) resultsByDate;
 
-  mapping(uint256 => uint256) indices;
+  mapping(uint256 => uint256) indicesByDate;
 
   address public dataSource;
 
@@ -94,7 +94,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function resultByIndexFor(uint256 _index) external view returns (bytes32, uint256) {
     require(doesIndexExistFor(_index), "The index is not been set yet.");
-    return (results[dates[_index]], dates[_index]);
+    return (resultsByDate[dates[_index]], dates[_index]);
   }
 
   /**
@@ -105,7 +105,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function resultByDateFor(uint256 _date) external view returns (bytes32, uint256) {
     require(isResultSetFor(_date), "The date is not been set yet.");
-    return (results[_date], indices[_date]);
+    return (resultsByDate[_date], indicesByDate[_date]);
   }
 
   /**
@@ -123,7 +123,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function lastUpdatedData() external view returns (bytes32) {
     require(dates.length > 1, "No results have been set");
-    return results[dates[dates.length - 1]];
+    return resultsByDate[dates[dates.length - 1]];
   }
 
   /**
@@ -131,7 +131,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @return `true` if a result has been set for the given date.
    */
   function isResultSetFor(uint256 _date) public view returns (bool) {
-    return indices[_date] > 0;
+    return indicesByDate[_date] > 0;
   }
 
   /**
@@ -149,9 +149,9 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _date The date of the result.
    */
   function _setResult(bytes32 _result, uint256 _date) internal {
-    results[_date] = _result;
+    resultsByDate[_date] = _result;
     dates.push(_date);
-    indices[_date] = dates.length - 1;
+    indicesByDate[_date] = dates.length - 1;
 
     _resultWasSet(_result, _date);
 
