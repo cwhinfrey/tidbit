@@ -5,7 +5,7 @@ const DataFeedOracleBase = artifacts.require('DataFeedOracleBase')
 
 require('chai').should()
 
-const now = (new Date()).getTime() / 1000;
+const now = Math.round((new Date()).getTime() / 1000)
 
 const ORACLE_INDEX_0 = 0
 const ORACLE_INDEX_1 = 1
@@ -45,31 +45,46 @@ contract('DataFeedOracleBase', (accounts) => {
     await shouldFail(oracle.initialize(0))
   })
 
+  it('is initialized with the correct state', async () => {
+    await oracle.initialize(dataSource)
+
+    await shouldFail(oracle.resultByIndex(ORACLE_INDEX_1))
+    await shouldFail(oracle.resultByIndex(ORACLE_INDEX_0))
+    await shouldFail(oracle.resultByDate(now))
+    await shouldFail(oracle.latestResultDate())
+    await shouldFail(oracle.latestResult())
+
+    const dateHasResult = await oracle.dateHasResult(now)
+    dateHasResult.should.equal(false)
+
+    const indexHasResult = await oracle.indexHasResult(ORACLE_INDEX_1)
+    indexHasResult.should.equal(false)
+  })
+
   it('can set result by data source', async () => {
     await oracle.initialize(dataSource)
 
-    for( var [key, value] of RESULTS_DATA ){
+    for(var [key, value] of RESULTS_DATA) {
       await oracle.setResult(value, key, { from: dataSource });
     }
 
-    const isResultSet = await oracle.isResultSetFor(ORACLE_INDEX_5_DATE)
+    const isResultSet = await oracle.dateHasResult(ORACLE_INDEX_5_DATE)
     isResultSet.should.equal(true)
-    const doesIndexExistFor = await oracle.doesIndexExistFor(ORACLE_INDEX_5)
-    doesIndexExistFor.should.equal(true)
+    const indexHasResult = await oracle.indexHasResult(ORACLE_INDEX_5)
+    indexHasResult.should.equal(true)
 
-    const [resultByIndex, date] = Object.values(await oracle.resultByIndexFor(ORACLE_INDEX_5))
+    const [resultByIndex, date] = Object.values(await oracle.resultByIndex(ORACLE_INDEX_5))
     resultByIndex.should.equal(ORACLE_INDEX_5_RESULT)
     date.should.eq.BN(ORACLE_INDEX_5_DATE)
-    const [resultByDate, index] = Object.values(await oracle.resultByDateFor(ORACLE_INDEX_5_DATE))
+    const [resultByDate, index] = Object.values(await oracle.resultByDate(ORACLE_INDEX_5_DATE))
     resultByDate.should.equal(ORACLE_INDEX_5_RESULT)
     index.should.eq.BN(ORACLE_INDEX_5)
 
-    const [lastUpdatedDate, lastUpdatedIndex] = Object.values(await oracle.lastUpdated())
-    lastUpdatedDate.should.eq.BN(ORACLE_INDEX_5_DATE)
-    lastUpdatedIndex.should.eq.BN(ORACLE_INDEX_5)
+    const latestResultDate = await oracle.latestResultDate()
+    latestResultDate.should.eq.BN(ORACLE_INDEX_5_DATE)
 
-    const lastUpdatedData = await oracle.lastUpdatedData()
-    lastUpdatedData.should.equal(ORACLE_INDEX_5_RESULT)
+    const latestResult = await oracle.latestResult()
+    latestResult.should.equal(ORACLE_INDEX_5_RESULT)
   })
 
   it('cannot be set by a different data source', async () => {
@@ -77,15 +92,15 @@ contract('DataFeedOracleBase', (accounts) => {
 
     await shouldFail(oracle.setResult(ORACLE_INDEX_5_RESULT, ORACLE_INDEX_5_DATE, { from: accounts[2] }))
 
-    const isResultSet = await oracle.isResultSetFor(ORACLE_INDEX_5_DATE)
+    const isResultSet = await oracle.dateHasResult(ORACLE_INDEX_5_DATE)
     isResultSet.should.equal(false)
-    const doesIndexExistFor = await oracle.doesIndexExistFor(ORACLE_INDEX_1)
-    doesIndexExistFor.should.equal(false)
+    const indexHasResult = await oracle.indexHasResult(ORACLE_INDEX_1)
+    indexHasResult.should.equal(false)
 
-    await shouldFail(oracle.resultByIndexFor(ORACLE_INDEX_1))
-    await shouldFail(oracle.resultByDateFor(ORACLE_INDEX_5_DATE))
-    await shouldFail(oracle.lastUpdated())
-    await shouldFail(oracle.lastUpdatedData())
+    await shouldFail(oracle.resultByIndex(ORACLE_INDEX_1))
+    await shouldFail(oracle.resultByDate(ORACLE_INDEX_5_DATE))
+    await shouldFail(oracle.latestResultDate())
+    await shouldFail(oracle.latestResult())
   })
 
   it('cannot be set twice', async () => {
@@ -112,17 +127,17 @@ contract('DataFeedOracleBase', (accounts) => {
     for( var [key, value] of RESULTS_DATA ){
       await oracle.setResult(value, key, { from: dataSource });
     }
-    const doesIndexExistFor = await oracle.doesIndexExistFor(ORACLE_INDEX_7)
-    doesIndexExistFor.should.equal(false)
-    await shouldFail(oracle.resultByIndexFor(ORACLE_INDEX_7))
+    const indexHasResult = await oracle.indexHasResult(ORACLE_INDEX_7)
+    indexHasResult.should.equal(false)
+    await shouldFail(oracle.resultByIndex(ORACLE_INDEX_7))
 
-    let isResultSet = await oracle.isResultSetFor(HALF_AN_HOUR_AGO)
+    let isResultSet = await oracle.dateHasResult(HALF_AN_HOUR_AGO)
     isResultSet.should.equal(false)
-    await shouldFail(oracle.resultByDateFor(HALF_AN_HOUR_AGO))
+    await shouldFail(oracle.resultByDate(HALF_AN_HOUR_AGO))
 
-    isResultSet = await oracle.isResultSetFor(HALF_AN_HOUR_LATER)
+    isResultSet = await oracle.dateHasResult(HALF_AN_HOUR_LATER)
     isResultSet.should.equal(false)
-    await shouldFail(oracle.resultByDateFor(HALF_AN_HOUR_LATER))
+    await shouldFail(oracle.resultByDate(HALF_AN_HOUR_LATER))
   })
 
   it('should emit ResultSet event', async () => {

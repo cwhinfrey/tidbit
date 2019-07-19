@@ -25,10 +25,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _date Date to check against the `now` value.
    */
   modifier onlyBefore(uint256 _date) {
-    require(
-      _date <= now,
-      "Date cannot be in the future"
-    );
+    require(_date <= now, "Date cannot be in the future");
     _;
   }
 
@@ -36,10 +33,15 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @dev Throws if the data source is not the caller.
    */
   modifier onlyDataSource() {
-    require(
-      msg.sender == dataSource,
-      "The caller is not the data source"
-    );
+    require(msg.sender == dataSource, "The caller is not the data source");
+    _;
+  }
+  
+  /**
+   * @dev Throws if no results have been set.
+   */
+  modifier greaterThanZeroResults() {
+    require(totalResults() > 0, "No results have been set");
     _;
   }
 
@@ -66,9 +68,16 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     returns (uint256 index)
   {
     if (dates.length > 0) {
-      require(_date > dates[dates.length - 1]);
+      require(_date > dates[totalResults()]);
     }
     _setResult(_result, _date);
+    return totalResults();
+  }
+
+  /**
+   * @return The total number of results that have been set.
+   */
+  function totalResults() public view returns (uint256) {
     return dates.length - 1;
   }
 
@@ -78,8 +87,8 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _index The index of the result.
    * @return The result value and the date of the result.
    */
-  function resultByIndexFor(uint256 _index) external view returns (bytes32, uint256) {
-    require(doesIndexExistFor(_index), "The index is not been set yet.");
+  function resultByIndex(uint256 _index) external view returns (bytes32, uint256) {
+    require(indexHasResult(_index), "No result set for _index");
     return (resultsByDate[dates[_index]], dates[_index]);
   }
 
@@ -89,8 +98,8 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _date The date of the result.
    * @return The result value and the index of the result.
    */
-  function resultByDateFor(uint256 _date) external view returns (bytes32, uint256) {
-    require(isResultSetFor(_date), "The date is not been set yet.");
+  function resultByDate(uint256 _date) external view returns (bytes32, uint256) {
+    require(dateHasResult(_date), "No result set for _date");
     return (resultsByDate[_date], indicesByDate[_date]);
   }
 
@@ -98,35 +107,41 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @notice Throws if no results have been set.
    * @return The date of the last result that was set.
    */
-  function lastUpdated() external view returns (uint256 date, uint256 index) {
-    require(dates.length > 1, "No results have been set");
-    return (dates[dates.length - 1], dates.length - 1);
+  function latestResultDate()
+    greaterThanZeroResults()
+    external view
+    returns (uint256)
+  {
+    return (dates[totalResults()]);
   }
 
   /**
    * @notice Throws if no results have been set.
    * @return The last result that was set.
    */
-  function lastUpdatedData() external view returns (bytes32) {
-    require(dates.length > 1, "No results have been set");
-    return resultsByDate[dates[dates.length - 1]];
-  }
-
-  /**
-   * @param _date The date of the data feed
-   * @return `true` if a result has been set for the given date.
-   */
-  function isResultSetFor(uint256 _date) public view returns (bool) {
-    return indicesByDate[_date] > 0;
+  function latestResult()
+    greaterThanZeroResults()
+    external view
+    returns (bytes32)
+  {
+    return resultsByDate[dates[totalResults()]];
   }
 
   /**
    * @param _index The index of a result.
    * @return `true` if a result for the given index exists.
    */
-  function doesIndexExistFor(uint256 _index) public view returns (bool) {
-    require(_index != 0, "The valid index has to bigger than 0.");
+  function indexHasResult(uint256 _index) public view returns (bool) {
+    require(_index > 0, "_index must be greater than 0");
     return dates.length > _index;
+  }
+
+  /**
+   * @param _date The date of the data feed
+   * @return `true` if a result has been set for the given date.
+   */
+  function dateHasResult(uint256 _date) public view returns (bool) {
+    return indicesByDate[_date] > 0;
   }
 
   /**
@@ -137,11 +152,11 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   function _setResult(bytes32 _result, uint256 _date) internal {
     resultsByDate[_date] = _result;
     dates.push(_date);
-    indicesByDate[_date] = dates.length - 1;
+    indicesByDate[_date] = totalResults();
 
     _resultWasSet(_result, _date);
 
-    emit ResultSet(_result, _date, dates.length - 1, msg.sender);
+    emit ResultSet(_result, _date, totalResults(), msg.sender);
   }
 
   /**
