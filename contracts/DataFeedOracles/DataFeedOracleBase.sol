@@ -14,7 +14,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
   mapping(uint256 => bytes32) results;
 
-  mapping(uint256 => uint256) indexes;
+  mapping(uint256 => uint256) indices;
 
   address public dataSource;
 
@@ -105,7 +105,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    */
   function resultByDateFor(uint256 _date) external view returns (bytes32, uint256) {
     require(isResultSetFor(_date), "The date is not been set yet.");
-    return (results[_date], indexes[_date]);
+    return (results[_date], indices[_date]);
   }
 
   /**
@@ -131,7 +131,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @return `true` if a result has been set for the given date.
    */
   function isResultSetFor(uint256 _date) public view returns (bool) {
-    return indexes[_date] > 0;
+    return indices[_date] > 0;
   }
 
   /**
@@ -151,7 +151,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   function _setResult(bytes32 _result, uint256 _date) internal {
     results[_date] = _result;
     dates.push(_date);
-    indexes[_date] = dates.length - 1;
+    indices[_date] = dates.length - 1;
 
     _resultWasSet(_result, _date);
 
