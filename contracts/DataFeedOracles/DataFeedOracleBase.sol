@@ -76,6 +76,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
   function setResult(bytes32 _result, uint256 _date)
     public
     onlyDataSource(dataSource)
+    onlyBefore(_date)
     returns (uint256 index)
   {
     if (dates.length > 0) {

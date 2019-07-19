@@ -23,8 +23,9 @@ const ORACLE_INDEX_2_RESULT = soliditySha3('3 hours ago')
 const ORACLE_INDEX_3_RESULT = soliditySha3('2 hours ago')
 const ORACLE_INDEX_4_RESULT = soliditySha3('1 hour ago')
 const ORACLE_INDEX_5_RESULT = soliditySha3('now')
+const HALF_AN_HOUR_LATER_RESULT = soliditySha3('0.5 hours later')
 
-const DATAFEEDS = new Map([
+const RESULTS_DATA = new Map([
   [ORACLE_INDEX_1_DATE, ORACLE_INDEX_1_RESULT],
   [ORACLE_INDEX_2_DATE, ORACLE_INDEX_2_RESULT],
   [ORACLE_INDEX_3_DATE, ORACLE_INDEX_3_RESULT],
@@ -42,7 +43,7 @@ contract('initialize DataFeedOracleBase', (accounts) => {
   })
 
   it('can set result by owner', async () => {
-    for( var [key, value] of DATAFEEDS ){
+    for( var [key, value] of RESULTS_DATA ){
       await oracle.setResult(value, key, { from: dataSource });
     }
 
@@ -90,8 +91,14 @@ contract('initialize DataFeedOracleBase', (accounts) => {
     await shouldFail(oracle.setResult(ORACLE_INDEX_4_RESULT, ORACLE_INDEX_4_DATE, { from: dataSource }))
   })
 
+  it('cannot set a date later than the `now` value', async () => {
+    await shouldFail(
+      oracle.setResult(HALF_AN_HOUR_LATER_RESULT, HALF_AN_HOUR_LATER, { from: dataSource })
+    )
+  })
+
   it('cannot fetch result with invalid index or date', async () => {
-    for( var [key, value] of DATAFEEDS ){
+    for( var [key, value] of RESULTS_DATA ){
       await oracle.setResult(value, key, { from: dataSource });
     }
     const doesIndexExistFor = await oracle.doesIndexExistFor(ORACLE_INDEX_7)
