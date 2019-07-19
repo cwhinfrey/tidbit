@@ -16,7 +16,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
 
   mapping(uint256 => uint256) indexes;
 
-  address payable public dataSource;
+  address public dataSource;
 
   event ResultSet(bytes32 _result, uint256 _date, uint256 _index, address _sender);
 
@@ -60,7 +60,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    *  @dev Initializes DataFeedOracleBase.
    *  @param _dataSource The address that is allowed to set results.
    */
-  function initialize(address payable _dataSource)
+  function initialize(address _dataSource)
     public
     onlyNonZeroDataSource(_dataSource) initializer {
     dataSource = _dataSource;
