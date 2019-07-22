@@ -4,7 +4,7 @@ import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title PaidOracle
@@ -12,7 +12,7 @@ import "zos-lib/contracts/Initializable.sol";
  * dataSource when the result is successfully set.
  */
 
-contract PaidOracle is Initializable, BasicOracle {
+contract PaidOracle is Initializer, BasicOracle {
 
   uint256 public reward;
   IERC20 public token;

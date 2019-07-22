@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
 import "./OracleBase.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title BasicOracle
  * @dev Extends OracleBase to allow the result to be set by a single data source
  */
-contract BasicOracle is Initializable, OracleBase {
+contract BasicOracle is Initializer, OracleBase {
 
   // The address that is able to set the result
   address public dataSource;

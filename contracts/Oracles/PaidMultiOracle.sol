@@ -4,14 +4,14 @@ import "./MultiOracle.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title PaidMultiOracle
  * @dev Extends MultiOracle to include rewards for dataSources
  */
 
-contract PaidMultiOracle is Initializable, MultiOracle {
+contract PaidMultiOracle is Initializer, MultiOracle {
 
   uint256 public reward;
   IERC20 public token;

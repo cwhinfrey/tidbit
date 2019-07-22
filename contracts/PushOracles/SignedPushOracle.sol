@@ -2,13 +2,13 @@ pragma solidity ^0.4.24;
 
 import "./PushOracleBase.sol";
 import "../Oracles/SignedOracle.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title SignedPushOracle
  * @dev Combines SignedOracle and PushOracleBase to create a push style SignedOracle
  */
-contract SignedPushOracle is Initializable, SignedOracle, PushOracleBase {
+contract SignedPushOracle is Initializer, SignedOracle, PushOracleBase {
 
   /**
    * @dev SignedPushOracle initializer

@@ -2,14 +2,14 @@ pragma solidity ^0.4.24;
 
 import "./BasicOracle.sol";
 import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title SignedOracle
  * @dev Extends BasicOracle to allow any address to resolve the oracle with a
  * signed message from the data source
  */
-contract SignedOracle is Initializable, BasicOracle {
+contract SignedOracle is Initializer, BasicOracle {
   using ECDSA for bytes32;
 
   /**

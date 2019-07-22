@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
 import "./IDataFeedOracle.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title DataFeedOracleBase
  * @dev Allows a data source address to set bytes32 result values by date. Result values
  *      can be publicly read by date and by index.
  */
-contract DataFeedOracleBase is Initializable, IDataFeedOracle {
+contract DataFeedOracleBase is Initializer, IDataFeedOracle {
 
   uint256[] dates;
 

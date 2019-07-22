@@ -2,14 +2,14 @@ pragma solidity ^0.4.24;
 
 import "./IOracleConsumer.sol";
 import "../Oracles/OracleBase.sol";
-import "zos-lib/contracts/Initializable.sol";
+import "../Initializer.sol";
 
 /**
  * @title PushOracleBase
  * @dev Extends OracleBase to be a push type oracle by calling an oracle consumer
  * when the result is set
  */ 
-contract PushOracleBase is Initializable, OracleBase {
+contract PushOracleBase is Initializer, OracleBase {
 
   IOracleConsumer public consumer;
 
