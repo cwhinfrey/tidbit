@@ -17,7 +17,7 @@ contract BasicPushOracle is Initializable, BasicOracle, PushOracleBase {
    * the result has been set.
    */
   function initialize (
-    address payable _dataSource,
+    address _dataSource,
     IOracleConsumer _consumer
   )
     public

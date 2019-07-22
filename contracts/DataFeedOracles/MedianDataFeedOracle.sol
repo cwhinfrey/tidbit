@@ -14,7 +14,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * @param _dataFeedSources Valid datafeeds to update price.
    * @param _dataSource The address that is able to set the result
    */
-  function initialize(address[] memory _dataFeedSources, address payable _dataSource) public initializer {
+  function initialize(address[] memory _dataFeedSources, address _dataSource) public initializer {
      require(_dataFeedSources.length > 0, "Cannot initialize MedianDataFeedOracle without empty data feeds");
      for (uint i = 0; i < _dataFeedSources.length; i++) {
        dataSources[_dataFeedSources[i]] = true;

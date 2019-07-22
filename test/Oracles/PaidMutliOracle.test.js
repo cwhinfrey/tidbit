@@ -7,7 +7,7 @@ chai
 
 const { toWei, soliditySha3, BN } = web3.utils
 
-
+const Token = artifacts.require('MockToken')
 const PaidMultiOracle = artifacts.require('PaidMultiOracle')
 
 const ORACLE_ID_0 = '0x0'
@@ -23,22 +23,24 @@ contract('PaidMultiOracle', (accounts) => {
   const contractBalance = toWei('100', 'ether')
   const contractBalance2 = toWei('5', 'ether')
 
-  let multiOracle
+  let multiOracle, token
   beforeEach(async ()=> {
     multiOracle = await PaidMultiOracle.new()
-    await multiOracle.initialize(reward, {value: contractBalance})
+    token = await Token.new()
+    await multiOracle.initialize(token.address, reward)
+    await token.mint(multiOracle.address, contractBalance)
   })
 
   it('getReward should return the reward if the contractBalance is greater than the reward', async () => {
-    const contractBalance = await web3.eth.getBalance(multiOracle.address)
     const oracleReward = await multiOracle.getReward()
     oracleReward.should.eq.BN(reward)
   })
 
   it('getReward should return the contractBalance if the contractBalance is less than the reward', async () => {
     const multiOracle2 = await PaidMultiOracle.new()
-    await multiOracle2.initialize(reward, {value: contractBalance2})
-    const contractBalance = await web3.eth.getBalance(multiOracle2.address)
+    await multiOracle2.initialize(token.address, reward)
+    await token.mint(multiOracle2.address, contractBalance2)
+    const contractBalance = await token.balanceOf(multiOracle2.address)
     const oracleReward = await multiOracle2.getReward()
     oracleReward.should.eq.BN(contractBalance)
   })
@@ -50,26 +52,16 @@ contract('PaidMultiOracle', (accounts) => {
   })
 
   it('should pay out reward', async () => {
-    const dataSourceOriginalBalance1 = new BN(await web3.eth.getBalance(dataSource1))
-    const dataSourceOriginalBalance2 = new BN(await web3.eth.getBalance(dataSource2))
-    
     await multiOracle.newOracle(ORACLE_ID_0, dataSource1)
     await multiOracle.setResult(ORACLE_ID_0, RESULT, {from: dataSource1 })
     await multiOracle.newOracle(ORACLE_ID_1, dataSource2)
     await multiOracle.setResult(ORACLE_ID_1, RESULT2, {from: dataSource2})
     
-    const dataSourceBalance1 = new BN(await web3.eth.getBalance(dataSource1))
-    const dataSourceBalance2 = new BN(await web3.eth.getBalance(dataSource2))
-
-    const finalBalanceHigh = dataSourceOriginalBalance1.add(new BN(reward))
-    const finalBalanceLow = finalBalanceHigh.sub(new BN(toWei('0.1')))
-
-
-    dataSourceBalance1.should.be.lt.BN(finalBalanceHigh)
-    dataSourceBalance1.should.be.gt.BN(finalBalanceLow)
-    
-    dataSourceBalance2.should.be.lt.BN(finalBalanceHigh)
-    dataSourceBalance2.should.be.gt.BN(finalBalanceLow)
+    const dataSourceBalance1 = new BN(await token.balanceOf(dataSource1))
+    const dataSourceBalance2 = new BN(await token.balanceOf(dataSource2))
+  
+    dataSourceBalance1.should.be.eq.BN(reward)
+    dataSourceBalance2.should.be.eq.BN(reward)
   })
 
   it('cannot pay out reward when the result was set twice', async () => {

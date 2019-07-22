@@ -6,7 +6,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract MultiOracle is IOracle, Ownable {
 
   struct OracleData {
-    address payable dataSource;
+    address dataSource;
     bytes32 result;
     bool resultIsSet;
   }
@@ -92,7 +92,7 @@ contract MultiOracle is IOracle, Ownable {
    */
   function newOracle(
     bytes32 _id,
-    address payable _dataSource
+    address _dataSource
   )
     public
     onlyOwner

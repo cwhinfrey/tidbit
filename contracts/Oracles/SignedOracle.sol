@@ -17,7 +17,7 @@ contract SignedOracle is Initializable, BasicOracle {
    * @param _dataSource The address that is able to set the result
    */
   function initialize(
-    address payable _dataSource
+    address _dataSource
   )
     public
     initializer

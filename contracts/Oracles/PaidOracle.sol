@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import "./BasicOracle.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "zos-lib/contracts/Initializable.sol";
@@ -14,16 +15,18 @@ import "zos-lib/contracts/Initializable.sol";
 contract PaidOracle is Initializable, BasicOracle {
 
   uint256 public reward;
+  IERC20 public token;
 
   function initialize(
-    address payable _dataSource,
+    IERC20 _token,
+    address _dataSource,
     uint256 _reward
   )
     public
-    payable
     initializer
   {
     BasicOracle.initialize(_dataSource);
+    token = _token;
     reward = _reward;
   }
 
@@ -36,7 +39,7 @@ contract PaidOracle is Initializable, BasicOracle {
     returns 
     (uint256)
   {
-    return Math.min(reward, address(this).balance);
+    return Math.min(reward, token.balanceOf(address(this)));
   }
 
   /*
@@ -47,6 +50,6 @@ contract PaidOracle is Initializable, BasicOracle {
   {
     require(resultIsSet, "Result hasn't been set yet.");
     require(dataSource != address(0));
-    dataSource.transfer(getReward());
+    token.transfer(dataSource, getReward());
   }
 }

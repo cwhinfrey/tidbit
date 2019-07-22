@@ -10,13 +10,13 @@ import "zos-lib/contracts/Initializable.sol";
 contract BasicOracle is Initializable, OracleBase {
 
   // The address that is able to set the result
-  address payable public dataSource;
+  address public dataSource;
 
   /**
    *  @dev BasicOracle initializer
    *  @param _dataSource The address that is able to set the result
    */
-  function initialize(address payable _dataSource) public initializer {
+  function initialize(address _dataSource) public initializer {
     require(_dataSource != address(0), "Require a non-null dataSource");
     dataSource = _dataSource;
   }

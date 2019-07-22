@@ -6,8 +6,9 @@ chai
   .use(bnChai(web3.utils.BN))
   .should()
 
-const { BN, soliditySha3, toWei } = web3.utils
+const { BN, soliditySha3 } = web3.utils
 
+const Token = artifacts.require('MockToken')
 const PaidOracle = artifacts.require('PaidOracle')
 
 const RESULT = soliditySha3('hello oracle')
@@ -18,41 +19,43 @@ contract('PaidOracle', (accounts) => {
   const reward = web3.utils.toWei('10', 'ether')
   const contractBalance = web3.utils.toWei('100', 'ether')
 
-  let oracle, initializeData
+  let oracle, initializeData, token
   beforeEach(async ()=> {
     oracle = await PaidOracle.new()
-    initializeData = encodeCall("initialize", ['address', 'uint256'], [dataSource, reward])
-    await web3.eth.sendTransaction({data: initializeData, value: contractBalance, to: oracle.address, from: accounts[0], gasLimit: 500000})
-    // await oracle.sendTransaction({data: initializeData, value: contractBalance})
+    token = await Token.new()
+
+    initializeData = encodeCall(
+      "initialize",
+      ['address', 'address', 'uint256'],
+      [token.address, dataSource, reward]
+    )
+    await web3.eth.sendTransaction({data: initializeData, to: oracle.address, from: accounts[0], gasLimit: 500000})
+    await token.mint(oracle.address, contractBalance)
   })
 
   it('requires a non-null dataSource', async () => {
     const paidOracle = await PaidOracle.new()
-    initializeData = encodeCall("initialize", ['address', 'uint256'], [ZERO_ADDRESS, reward])
-    
+    initializeData = encodeCall(
+      "initialize",
+      ['address', 'address', 'uint256'],
+      [token.address, ZERO_ADDRESS, reward]
+    )
     await shouldFail(
-      paidOracle.sendTransaction({data: initializeData, value: contractBalance})
+      paidOracle.sendTransaction({data: initializeData})
     )
   })
 
   it('reward should be the contract balance if its less than the reward, otherwise return reward itself.', async () => {
-    const contractBalance = new BN(await web3.eth.getBalance(oracle.address))
+    const contractBalance = new BN(await token.balanceOf(oracle.address))
     const oracleReward = await oracle.getReward()
     let amount = contractBalance.lt(reward) ? contractBalance : reward
     oracleReward.should.eq.BN(amount)
   })
 
   it('should pay out reward', async () => {
-    const dataSourceOriginalBalance = new BN(await web3.eth.getBalance(dataSource))
-
     await oracle.setResult(RESULT, {from: dataSource })
-
-    const dataSourceBalance = new BN(await web3.eth.getBalance(dataSource))
-    const finalBalanceHigh = dataSourceOriginalBalance.add(new BN(reward))
-    const finalBalanceLow = finalBalanceHigh.sub(new BN(toWei('0.1')))
-    
-    dataSourceBalance.should.be.lt.BN(finalBalanceHigh)
-    dataSourceBalance.should.be.gt.BN(finalBalanceLow)
+    const dataSourceBalance = new BN(await token.balanceOf(dataSource))
+    dataSourceBalance.should.be.eq.BN(reward)
   })
 
   it('cannot pay out reward when the result was set twice', async () => {
