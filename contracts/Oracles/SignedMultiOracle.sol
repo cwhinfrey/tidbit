@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.4.24;
 
 import "./MultiOracle.sol";
 import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";

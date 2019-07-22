@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.4.24;
 
 import "./DataFeedOracleBase.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
@@ -31,7 +31,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * The assumption here is that the dataFeeds initialized here are already sorted.
    * It could be achieved cheaper off-chain than on-chain.
   */
-  function setResult(DataFeedOracleBase[] calldata _dataFeeds) external {
+  function setResult(DataFeedOracleBase[] _dataFeeds) external {
     require(_dataFeeds.length == approvedDataFeedsLength, "Must include every approved data feed without duplicates");
 
     for (uint i = 0; i < _dataFeeds.length; i++) {
