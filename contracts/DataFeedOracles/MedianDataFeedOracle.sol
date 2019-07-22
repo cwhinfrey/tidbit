@@ -33,23 +33,21 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
 
        require(dataSources[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
 
-       uint256 date;
-       uint256 index;
-       (date, index) = _dataFeeds[i].lastUpdated();
+       uint256 date = _dataFeeds[i].latestResultDate();
        require(date > lastUpdated, "Stale data.");
 
        if(i != _dataFeeds.length - 1) {
-         require(uint256(_dataFeeds[i].lastUpdatedData()) <= uint256(_dataFeeds[i+1].lastUpdatedData()), "The dataFeeds is not sorted.");
+         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds is not sorted.");
        }
     }
 
     bytes32 medianValue;
     if(_dataFeeds.length % 2 == 0) {
-      uint256 one = uint256(_dataFeeds[(_dataFeeds.length / 2) - 1].lastUpdatedData());
-      uint256 two = uint256(_dataFeeds[(_dataFeeds.length / 2)].lastUpdatedData());
+      uint256 one = uint256(_dataFeeds[(_dataFeeds.length / 2) - 1].latestResult());
+      uint256 two = uint256(_dataFeeds[(_dataFeeds.length / 2)].latestResult());
       medianValue = bytes32((one + two) / 2);
     } else {
-      medianValue = _dataFeeds[_dataFeeds.length / 2].lastUpdatedData();
+      medianValue = _dataFeeds[_dataFeeds.length / 2].latestResult();
     }
     uint256 now = uint256(block.timestamp);
     super.setResult(medianValue, now);
