@@ -36,14 +36,6 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
     require(msg.sender == dataSource, "The caller is not the data source");
     _;
   }
-  
-  /**
-   * @dev Throws if no results have been set.
-   */
-  modifier greaterThanZeroResults() {
-    require(totalResults() > 0, "No results have been set");
-    _;
-  }
 
   /**
    *  @dev Initializes DataFeedOracleBase.
@@ -87,7 +79,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _index The index of the result.
    * @return The result value and the date of the result.
    */
-  function resultByIndex(uint256 _index) external view returns (bytes32, uint256) {
+  function resultByIndex(uint256 _index) public view returns (bytes32, uint256) {
     require(indexHasResult(_index), "No result set for _index");
     return (resultsByDate[dates[_index]], dates[_index]);
   }
@@ -98,7 +90,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @param _date The date of the result.
    * @return The result value and the index of the result.
    */
-  function resultByDate(uint256 _date) external view returns (bytes32, uint256) {
+  function resultByDate(uint256 _date) public view returns (bytes32, uint256) {
     require(dateHasResult(_date), "No result set for _date");
     return (resultsByDate[_date], indicesByDate[_date]);
   }
@@ -108,8 +100,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @return The date of the last result that was set.
    */
   function latestResultDate()
-    greaterThanZeroResults()
-    external view
+    public view
     returns (uint256)
   {
     return (dates[totalResults()]);
@@ -120,8 +111,7 @@ contract DataFeedOracleBase is Initializable, IDataFeedOracle {
    * @return The last result that was set.
    */
   function latestResult()
-    greaterThanZeroResults()
-    external view
+    public view
     returns (bytes32)
   {
     return resultsByDate[dates[totalResults()]];
