@@ -6,7 +6,7 @@ import "zos-lib/contracts/Initializable.sol";
 
 contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
 
-  mapping(address => bool) public dataSources;
+  mapping(address => bool) public approvedDataFeeds;
 
   event AddedDataFeed(address dataFeed);
   event RemovedDataFeed(address dataFeed);
@@ -19,7 +19,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
   function initialize(address[] memory _dataFeedSources, address  _dataSource) public initializer {
      require(_dataFeedSources.length > 0, "Cannot initialize MedianDataFeedOracle without data feeds");
      for (uint i = 0; i < _dataFeedSources.length; i++) {
-       dataSources[_dataFeedSources[i]] = true;
+       approvedDataFeeds[_dataFeedSources[i]] = true;
      }
      DataFeedOracleBase.initialize(_dataSource);
   }
@@ -32,7 +32,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
   */
   function setResult(DataFeedOracleBase[] calldata _dataFeeds) external {
     for (uint i = 0; i < _dataFeeds.length; i++) {
-       require(dataSources[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
+       require(approvedDataFeeds[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
        require(_dataFeeds[i].latestResultDate() > latestResultDate(), "Stale data.");
 
        if(i != _dataFeeds.length - 1) {
@@ -57,8 +57,8 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * @param dataFeed dataFeedOracle to add to approvedDataFeeds
   */
   function addDataFeed(address dataFeed) onlyDataSource() public {
-    require(!dataSources[dataFeed]);
-    dataSources[dataFeed] = true;
+    require(!approvedDataFeeds[dataFeed]);
+    approvedDataFeeds[dataFeed] = true;
     emit AddedDataFeed(dataFeed);
   }
 
@@ -67,8 +67,8 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * @param dataFeed dataFeedOracle to remove from approvedDataFeeds
   */
   function removeDataFeed(address dataFeed) onlyDataSource() public {
-    require(dataSources[dataFeed]);
-    dataSources[dataFeed] = false;
+    require(approvedDataFeeds[dataFeed]);
+    approvedDataFeeds[dataFeed] = false;
     emit RemovedDataFeed(dataFeed);
   }
 

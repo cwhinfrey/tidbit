@@ -1,5 +1,5 @@
 import { expectEvent, shouldFail } from 'openzeppelin-test-helpers'
-const { bytes32ToNumString, getMeidan, numberToBytes32 } = require('./Utils.test')
+const { bytes32ToNumString, getMedian, numberToBytes32 } = require('./Utils.test')
 
 const MedianDataFeedOracle = artifacts.require('MedianDataFeedOracle')
 const DataFeedOracleBase = artifacts.require('DataFeedOracleBase')
@@ -21,16 +21,16 @@ const ORACLE_RESULT = PRICES.map(
 contract('initialize MedianDataFeedOracle', (accounts) => {
   let oracles
   const dataFeedOracleDataSource = accounts[0]
-  const dataSources = [accounts[1], accounts[2], accounts[3], accounts[4]]
+  const approvedDataFeeds = [accounts[1], accounts[2], accounts[3], accounts[4]]
 
   before(async () => {
     oracles = []
-    for (var i = 0; i < dataSources.length; i++) {
+    for (var i = 0; i < approvedDataFeeds.length; i++) {
       let oracle = await DataFeedOracleBase.new()
-      await oracle.initialize(dataSources[i])
+      await oracle.initialize(approvedDataFeeds[i])
 
       for(var j = 0; j < ORACLE_RESULT[i].length; j++ ){
-        await oracle.setResult(ORACLE_RESULT[i][j][1], ORACLE_RESULT[i][j][0], { from: dataSources[i]});
+        await oracle.setResult(ORACLE_RESULT[i][j][1], ORACLE_RESULT[i][j][0], { from: approvedDataFeeds[i]});
       }
       oracles.push(oracle.address)
     }
@@ -46,7 +46,7 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
     await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
     await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
     const latestResult = await dataFeedOracle.latestResult()
-    const median = getMeidan(PRICES.map(x => x[1] * Math.pow(10, 18)))
+    const median = getMedian(PRICES.map(x => x[1] * Math.pow(10, 18)))
     bytes32ToNumString(latestResult).should.equal(median.toString())
     const latestResultDate = await dataFeedOracle.latestResultDate()
     latestResultDate.should.eq.BN(now())
@@ -60,14 +60,14 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
       await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
     })
 
-    it('adds new dataFeed to dataSources', async () => {
-      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(false)
+    it('adds new dataFeed to approvedDataFeeds', async () => {
+      expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(false)
       await dataFeedOracle.addDataFeed(accounts[6])
-      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(true)
+      expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(true)
     })
 
     it('reverts if dataFeed is already a dataSource', async () => {
-      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(true)
+      expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(true)
       await shouldFail(dataFeedOracle.addDataFeed(oracles[0]))
     })
 
@@ -86,14 +86,14 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
       await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
     })
 
-    it('removes existing dataFeed from dataSources', async () => {
-      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(true)
+    it('removes existing dataFeed from approvedDataFeeds', async () => {
+      expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(true)
       await dataFeedOracle.removeDataFeed(oracles[0])
-      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(false)
+      expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(false)
     })
 
     it('reverts if dataFeed is not an existing dataSource', async () => {
-      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(false)
+      expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(false)
       await shouldFail(dataFeedOracle.removeDataFeed(accounts[6]))
     })
 
