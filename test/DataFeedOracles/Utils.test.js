@@ -10,13 +10,13 @@ function bytes32ToNumString(bytes32str) {
     return bn.toString();
 }
 
-function getMeidan(array) {
+function getMedian(array) {
   const len = array.length;
   return len % 2 == 0 ? (array[len/2] + array[len/2 - 1]) / 2 : array[len/2]
 }
 
 module.exports = {
   bytes32ToNumString,
-  getMeidan,
+  getMedian,
   numberToBytes32
 }
