@@ -19,16 +19,12 @@ const ORACLE_RESULT = PRICES.map(
 ))
 
 contract('initialize MedianDataFeedOracle', (accounts) => {
-  const dataFeedOracleDataSource = accounts[5]
+  let oracles
+  const dataFeedOracleDataSource = accounts[0]
   const dataSources = [accounts[1], accounts[2], accounts[3], accounts[4]]
 
-  it('cannot initilize medianDataFeedOracle with empty oracle array.', async () => {
-    let oracle = await MedianDataFeedOracle.new()
-    await shouldFail(oracle.initialize([]))
-  })
-
-  it('Set medianDataFeed', async () => {
-    let oracles = []
+  before(async () => {
+    oracles = []
     for (var i = 0; i < dataSources.length; i++) {
       let oracle = await DataFeedOracleBase.new()
       await oracle.initialize(dataSources[i])
@@ -38,7 +34,14 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
       }
       oracles.push(oracle.address)
     }
+  })
 
+  it('cannot initilize medianDataFeedOracle with empty oracle array.', async () => {
+    let oracle = await MedianDataFeedOracle.new()
+    await shouldFail(oracle.initialize([]))
+  })
+
+  it('Set medianDataFeed', async () => {
     let dataFeedOracle = await MedianDataFeedOracle.new()
     await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
     await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
@@ -49,4 +52,55 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
     latestResultDate.should.eq.BN(now())
   })
 
+  describe('addDataFeed()', () => {
+    let dataFeedOracle
+
+    beforeEach(async () => {
+      dataFeedOracle = await MedianDataFeedOracle.new()
+      await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+    })
+
+    it('adds new dataFeed to dataSources', async () => {
+      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(false)
+      await dataFeedOracle.addDataFeed(accounts[6])
+      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(true)
+    })
+
+    it('reverts if dataFeed is already a dataSource', async () => {
+      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(true)
+      await shouldFail(dataFeedOracle.addDataFeed(oracles[0]))
+    })
+
+    it('emits an AddedDataFeed event', async () => {
+      const { logs } = await dataFeedOracle.addDataFeed(accounts[6])
+      expect(logs[0].event).to.equal('AddedDataFeed')
+      expect(logs[0].args.dataFeed).to.equal(accounts[6])
+    })
+  })
+
+  describe('removeDataFeed()', () => {
+    let dataFeedOracle
+
+    beforeEach(async () => {
+      dataFeedOracle = await MedianDataFeedOracle.new()
+      await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+    })
+
+    it('removes existing dataFeed from dataSources', async () => {
+      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(true)
+      await dataFeedOracle.removeDataFeed(oracles[0])
+      expect(await dataFeedOracle.dataSources(oracles[0])).to.equal(false)
+    })
+
+    it('reverts if dataFeed is not an existing dataSource', async () => {
+      expect(await dataFeedOracle.dataSources(accounts[6])).to.equal(false)
+      await shouldFail(dataFeedOracle.removeDataFeed(accounts[6]))
+    })
+
+    it('emits a RemoveDataFeed event', async () => {
+      const { logs } = await dataFeedOracle.removeDataFeed(oracles[0])
+      expect(logs[0].event).to.equal('RemovedDataFeed')
+      expect(logs[0].args.dataFeed).to.equal(oracles[0])
+    })
+  })
 })

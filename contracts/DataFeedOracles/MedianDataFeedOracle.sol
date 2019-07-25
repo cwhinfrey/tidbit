@@ -6,7 +6,10 @@ import "zos-lib/contracts/Initializable.sol";
 
 contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
 
-  mapping(address => bool) dataSources;
+  mapping(address => bool) public dataSources;
+
+  event AddedDataFeed(address dataFeed);
+  event RemovedDataFeed(address dataFeed);
 
   /**
    * @dev MedianDataFeedOracle constructor
@@ -49,12 +52,24 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
     super.setResult(medianValue, now);
   }
 
+  /**
+   * @dev add new dataFeed to be medianized for each result
+   * @param dataFeed dataFeedOracle to add to approvedDataFeeds
+  */
   function addDataFeed(address dataFeed) onlyDataSource() public {
+    require(!dataSources[dataFeed]);
     dataSources[dataFeed] = true;
+    emit AddedDataFeed(dataFeed);
   }
 
+  /**
+   * @dev remove existing dataFeed to be medianized for each result
+   * @param dataFeed dataFeedOracle to remove from approvedDataFeeds
+  */
   function removeDataFeed(address dataFeed) onlyDataSource() public {
+    require(dataSources[dataFeed]);
     dataSources[dataFeed] = false;
+    emit RemovedDataFeed(dataFeed);
   }
 
 }
