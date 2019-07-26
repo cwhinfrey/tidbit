@@ -18,7 +18,7 @@ const ORACLE_RESULT = PRICES.map(
       z => [ DATES[y.indexOf(z)], numberToBytes32(z * Math.pow(10, 18) )]
 ))
 
-contract.only('MedianDataFeedOracle', (accounts) => {
+contract('MedianDataFeedOracle', (accounts) => {
   let dataFeedOracle, oracles
   const dataFeedOracleDataSource = accounts[0]
   const approvedDataFeeds = [accounts[1], accounts[2], accounts[3], accounts[4]]
@@ -79,6 +79,10 @@ contract.only('MedianDataFeedOracle', (accounts) => {
       let duplicateOracles = [oracles[0], oracles[1], oracles[0], oracles[3]]
       await shouldFail(dataFeedOracle.setResult(duplicateOracles, { from: dataFeedOracleDataSource}))
     })
+
+    it('reverts if data feeds are not properly sorted', async () => {
+      await shouldFail(dataFeedOracle.setResult([oracles[0], oracles[2], oracles[1], oracles[3]]))
+    })
   })
 
   describe('addDataFeed()', () => {
@@ -93,6 +97,12 @@ contract.only('MedianDataFeedOracle', (accounts) => {
       expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(false)
       await dataFeedOracle.addDataFeed(accounts[6])
       expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(true)
+    })
+
+    it('updates the approvedDataFeedsLength', async () => {
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(4)
+      await dataFeedOracle.addDataFeed(accounts[6])
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(5)
     })
 
     it('reverts if dataFeed is already a dataSource', async () => {
@@ -119,6 +129,12 @@ contract.only('MedianDataFeedOracle', (accounts) => {
       expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(true)
       await dataFeedOracle.removeDataFeed(oracles[0])
       expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(false)
+    })
+
+    it('updates the approvedDataFeedsLength', async () => {
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(4)
+      await dataFeedOracle.removeDataFeed(oracles[0])
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(3)
     })
 
     it('reverts if dataFeed is not an existing dataSource', async () => {

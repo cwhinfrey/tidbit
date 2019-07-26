@@ -44,7 +44,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
        }
 
        if(i != _dataFeeds.length - 1) {
-         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds is not sorted.");
+         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds are not sorted.");
        }
     }
 
