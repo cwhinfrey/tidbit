@@ -7,6 +7,7 @@ import "zos-lib/contracts/Initializable.sol";
 contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
 
   mapping(address => bool) public approvedDataFeeds;
+  uint public approvedDataFeedsLength;
 
   event AddedDataFeed(address dataFeed);
   event RemovedDataFeed(address dataFeed);
@@ -21,6 +22,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
      for (uint i = 0; i < _dataFeedSources.length; i++) {
        approvedDataFeeds[_dataFeedSources[i]] = true;
      }
+     approvedDataFeedsLength = _dataFeedSources.length;
      DataFeedOracleBase.initialize(_dataSource);
   }
 
@@ -31,12 +33,18 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * It could be achieved cheaper off-chain than on-chain.
   */
   function setResult(DataFeedOracleBase[] calldata _dataFeeds) external {
+    require(_dataFeeds.length == approvedDataFeedsLength, "Must include every approved data feed without duplicates");
+
     for (uint i = 0; i < _dataFeeds.length; i++) {
        require(approvedDataFeeds[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
        require(_dataFeeds[i].latestResultDate() > latestResultDate(), "Stale data.");
 
+       for (uint j = i + 1; j < _dataFeeds.length; j++) {
+         require(_dataFeeds[i] != _dataFeeds[j], "Duplicate data feeds prohibited");
+       }
+
        if(i != _dataFeeds.length - 1) {
-         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds is not sorted.");
+         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds are not sorted.");
        }
     }
 
@@ -59,6 +67,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
   function addDataFeed(address dataFeed) onlyDataSource() public {
     require(!approvedDataFeeds[dataFeed]);
     approvedDataFeeds[dataFeed] = true;
+    approvedDataFeedsLength++;
     emit AddedDataFeed(dataFeed);
   }
 
@@ -69,6 +78,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
   function removeDataFeed(address dataFeed) onlyDataSource() public {
     require(approvedDataFeeds[dataFeed]);
     approvedDataFeeds[dataFeed] = false;
+    approvedDataFeedsLength--;
     emit RemovedDataFeed(dataFeed);
   }
 

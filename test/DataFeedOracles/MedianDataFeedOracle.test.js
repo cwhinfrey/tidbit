@@ -18,8 +18,8 @@ const ORACLE_RESULT = PRICES.map(
       z => [ DATES[y.indexOf(z)], numberToBytes32(z * Math.pow(10, 18) )]
 ))
 
-contract('initialize MedianDataFeedOracle', (accounts) => {
-  let oracles
+contract('MedianDataFeedOracle', (accounts) => {
+  let dataFeedOracle, oracles
   const dataFeedOracleDataSource = accounts[0]
   const approvedDataFeeds = [accounts[1], accounts[2], accounts[3], accounts[4]]
 
@@ -36,20 +36,53 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
     }
   })
 
-  it('cannot initilize medianDataFeedOracle with empty oracle array.', async () => {
-    let oracle = await MedianDataFeedOracle.new()
-    await shouldFail(oracle.initialize([]))
+  describe('initialize()', () => {
+    beforeEach(async () => {
+      dataFeedOracle = await MedianDataFeedOracle.new()
+    })
+
+    it('cannot initilize medianDataFeedOracle with empty oracle array.', async () => {
+      await shouldFail(dataFeedOracle.initialize([]))
+    })
+
+    it('cannot be initialized twice', async () => {
+      await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+      await shouldFail(dataFeedOracle.initialize(oracles, dataFeedOracleDataSource))
+    })
+
+    it('sets the correct approvedDataFeedsLength', async () => {
+      await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(oracles.length)
+    })
   })
 
-  it('Set medianDataFeed', async () => {
-    let dataFeedOracle = await MedianDataFeedOracle.new()
-    await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
-    await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
-    const latestResult = await dataFeedOracle.latestResult()
-    const median = getMedian(PRICES.map(x => x[1] * Math.pow(10, 18)))
-    bytes32ToNumString(latestResult).should.equal(median.toString())
-    const latestResultDate = await dataFeedOracle.latestResultDate()
-    latestResultDate.should.eq.BN(now())
+  describe('setResult()', () => {
+    beforeEach(async () => {
+      dataFeedOracle = await MedianDataFeedOracle.new()
+      await dataFeedOracle.initialize(oracles, dataFeedOracleDataSource)
+    })
+
+    it('sets the correct median', async () => {
+      await dataFeedOracle.setResult(oracles, { from: dataFeedOracleDataSource})
+      const latestResult = await dataFeedOracle.latestResult()
+      const median = getMedian(PRICES.map(x => x[1] * Math.pow(10, 18)))
+      bytes32ToNumString(latestResult).should.equal(median.toString())
+      const latestResultDate = await dataFeedOracle.latestResultDate()
+      expect(latestResultDate.toNumber()).to.be.within(Math.floor(now()), Math.floor(now() + 1))
+    })
+
+    it('reverts if not all approved data feeds are included', async () => {
+      await shouldFail(dataFeedOracle.setResult(oracles.slice(1,5), { from: dataFeedOracleDataSource}))
+    })
+
+    it('reverts if there are any duplicated data feeds included', async () => {
+      let duplicateOracles = [oracles[0], oracles[1], oracles[0], oracles[3]]
+      await shouldFail(dataFeedOracle.setResult(duplicateOracles, { from: dataFeedOracleDataSource}))
+    })
+
+    it('reverts if data feeds are not properly sorted', async () => {
+      await shouldFail(dataFeedOracle.setResult([oracles[0], oracles[2], oracles[1], oracles[3]]))
+    })
   })
 
   describe('addDataFeed()', () => {
@@ -64,6 +97,12 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
       expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(false)
       await dataFeedOracle.addDataFeed(accounts[6])
       expect(await dataFeedOracle.approvedDataFeeds(accounts[6])).to.equal(true)
+    })
+
+    it('updates the approvedDataFeedsLength', async () => {
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(4)
+      await dataFeedOracle.addDataFeed(accounts[6])
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(5)
     })
 
     it('reverts if dataFeed is already a dataSource', async () => {
@@ -90,6 +129,12 @@ contract('initialize MedianDataFeedOracle', (accounts) => {
       expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(true)
       await dataFeedOracle.removeDataFeed(oracles[0])
       expect(await dataFeedOracle.approvedDataFeeds(oracles[0])).to.equal(false)
+    })
+
+    it('updates the approvedDataFeedsLength', async () => {
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(4)
+      await dataFeedOracle.removeDataFeed(oracles[0])
+      expect((await dataFeedOracle.approvedDataFeedsLength()).toNumber()).to.equal(3)
     })
 
     it('reverts if dataFeed is not an existing dataSource', async () => {
