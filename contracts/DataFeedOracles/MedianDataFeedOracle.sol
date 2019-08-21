@@ -65,10 +65,7 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * @param dataFeed dataFeedOracle to add to approvedDataFeeds
   */
   function addDataFeed(address dataFeed) onlyDataSource() public {
-    require(!approvedDataFeeds[dataFeed]);
-    approvedDataFeeds[dataFeed] = true;
-    approvedDataFeedsLength++;
-    emit AddedDataFeed(dataFeed);
+    _addDataFeed(dataFeed);
   }
 
   /**
@@ -76,6 +73,20 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
    * @param dataFeed dataFeedOracle to remove from approvedDataFeeds
   */
   function removeDataFeed(address dataFeed) onlyDataSource() public {
+    _removeDataFeed(dataFeed);
+  }
+
+
+  // Internal Functions
+
+  function _addDataFeed(address dataFeed) internal {
+    require(!approvedDataFeeds[dataFeed]);
+    approvedDataFeeds[dataFeed] = true;
+    approvedDataFeedsLength++;
+    emit AddedDataFeed(dataFeed);
+  }
+
+  function _removeDataFeed(address dataFeed) internal {
     require(approvedDataFeeds[dataFeed]);
     approvedDataFeeds[dataFeed] = false;
     approvedDataFeedsLength--;
