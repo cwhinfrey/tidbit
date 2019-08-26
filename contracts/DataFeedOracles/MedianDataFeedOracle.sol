@@ -20,9 +20,8 @@ contract MedianDataFeedOracle is Initializable, DataFeedOracleBase {
   function initialize(address[] memory _dataFeedSources, address  _dataSource) public initializer {
      require(_dataFeedSources.length > 0, "Cannot initialize MedianDataFeedOracle without data feeds");
      for (uint i = 0; i < _dataFeedSources.length; i++) {
-       approvedDataFeeds[_dataFeedSources[i]] = true;
+       _addDataFeed(_dataFeedSources[i]);
      }
-     approvedDataFeedsLength = _dataFeedSources.length;
      DataFeedOracleBase.initialize(_dataSource);
   }
 
