@@ -1,8 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "./DataFeedOracleBase.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../TidbitSafeMath.sol";
 import "../Initializer.sol";
+
+// Renaming zeppelin's SafeMath -> TidbitSafeMath since it conflicts with aragon's :( :( :( :(
 
 contract MedianDataFeedOracle is Initializer, DataFeedOracleBase {
 
