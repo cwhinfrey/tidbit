@@ -33,7 +33,7 @@ contract MedianDataFeedOracle is Initializer, DataFeedOracleBase {
    * The assumption here is that the dataFeeds initialized here are already sorted.
    * It could be achieved cheaper off-chain than on-chain.
   */
-  function setResult(DataFeedOracleBase[] _dataFeeds) external {
+  function setResult(DataFeedOracleBase[] _dataFeeds) public {
     require(_dataFeeds.length == approvedDataFeedsLength, "Must include every approved data feed without duplicates");
 
     for (uint i = 0; i < _dataFeeds.length; i++) {
