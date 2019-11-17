@@ -33,29 +33,31 @@ contract MedianDataFeedOracle is Initializer, DataFeedOracleBase {
    * The assumption here is that the dataFeeds initialized here are already sorted.
    * It could be achieved cheaper off-chain than on-chain.
   */
-  function setResult(DataFeedOracleBase[] _dataFeeds) public {
+
+  function setResult(address[] _dataFeeds) public {
     require(_dataFeeds.length == approvedDataFeedsLength, "Must include every approved data feed without duplicates");
 
     for (uint i = 0; i < _dataFeeds.length; i++) {
-       require(approvedDataFeeds[address(_dataFeeds[i].dataSource)], "Unauthorized data feed.");
-       require(_dataFeeds[i].latestResultDate() > latestResultDate(), "Stale data.");
+       DataFeedOracleBase dataFeed = DataFeedOracleBase(_dataFeeds[i]);
+       require(approvedDataFeeds[address(dataFeed.dataSource)], "Unauthorized data feed.");
+       require(dataFeed.latestResultDate() > latestResultDate(), "Stale data.");
 
        for (uint j = i + 1; j < _dataFeeds.length; j++) {
-         require(_dataFeeds[i] != _dataFeeds[j], "Duplicate data feeds prohibited");
+         require(dataFeed != _dataFeeds[j], "Duplicate data feeds prohibited");
        }
 
        if(i != _dataFeeds.length - 1) {
-         require(uint256(_dataFeeds[i].latestResult()) <= uint256(_dataFeeds[i+1].latestResult()), "The dataFeeds are not sorted.");
+         require(uint256(dataFeed.latestResult()) <= uint256(DataFeedOracleBase(_dataFeeds[i+1]).latestResult()), "The dataFeeds are not sorted.");
        }
     }
 
     bytes32 medianValue;
     if(_dataFeeds.length % 2 == 0) {
-      uint256 one = uint256(_dataFeeds[(_dataFeeds.length / 2) - 1].latestResult());
-      uint256 two = uint256(_dataFeeds[(_dataFeeds.length / 2)].latestResult());
+      uint256 one = uint256(DataFeedOracleBase(_dataFeeds[(_dataFeeds.length / 2) - 1]).latestResult());
+      uint256 two = uint256(DataFeedOracleBase(_dataFeeds[(_dataFeeds.length / 2)]).latestResult());
       medianValue = bytes32((one + two) / 2);
     } else {
-      medianValue = _dataFeeds[_dataFeeds.length / 2].latestResult();
+      medianValue = DataFeedOracleBase(_dataFeeds[_dataFeeds.length / 2]).latestResult();
     }
     uint256 now = uint256(block.timestamp);
     super.setResult(medianValue, now);
