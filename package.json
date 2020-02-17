@@ -1,6 +1,6 @@
 {
   "name": "@levelk/tidbit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "lib/index.js",
   "files": [
