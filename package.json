@@ -1,16 +1,17 @@
 {
-  "name": "tidbit",
+  "name": "@levelk/tidbit",
   "version": "0.1.0",
   "license": "MIT",
   "main": "lib/index.js",
   "files": [
     "build",
     "contracts",
-    "test"
+    "docs",
+    "lib"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/levelkdev/tidbit.git"
+    "url": "git+https://github.com/levelkdev/tidbit.git"
   },
   "dependencies": {
     "bn-chai": "^1.0.1",
@@ -53,5 +54,11 @@
     "test:coverage": "npm run build && npm run solidity-coverage",
     "ganache-cli": "scripts/runGanacheCLI.sh",
     "lint": "standard --verbose | snazzy"
-  }
+  },
+  "description": "A library for oracles on Ethereum.",
+  "bugs": {
+    "url": "https://github.com/levelkdev/tidbit/issues"
+  },
+  "homepage": "https://github.com/levelkdev/tidbit#readme",
+  "author": "@cwhinfrey"
 }
