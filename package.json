@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "bn-chai": "^1.0.1",
-    "moment": "^2.22.0",
+    "moment": "^2.29.4",
     "openzeppelin-solidity": "^2.1.2",
     "solc": "^0.4.24",
     "truffle-blockchain-utils": "^0.0.3",
